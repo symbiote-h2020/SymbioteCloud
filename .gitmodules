@@ -1,6 +1,3 @@
-[submodule "CloudConfigProperties"]
-	path = CloudConfigProperties
-	url = https://github.com/symbiote-h2020/CloudConfigProperties.git
 [submodule "ZipkinService"]
 	path = ZipkinService
 	url = https://github.com/symbiote-h2020/ZipkinService.git
