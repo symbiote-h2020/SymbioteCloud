@@ -14,7 +14,9 @@ As a result of the following steps you will setup and run symbIoTe Cloud compone
 
  2. Download symbIoTe platform components.
 
-  Platform components are available in the github, bundled in the following directory: https://github.com/symbiote-h2020/SymbioteCloud .
+  Platform components are available in the github:
+  * If you just want to deploy but not develop/commit any changes, you can get all components straight from the superproject:   `git clone --recursive https://github.com/symbiote-h2020/SymbioteCloud.git`
+  * If you want to download the repos for development purposes, you need to clone them individually into separate folders
   
   The Component repositories contain three different branch types; master, develop and feature branches. Master branches contain the latest stable symbIoTe release version (starting from release 1). Develop branches are general development branches containing the newest features. Finally, feature branches are where particular features are developed. 
   
