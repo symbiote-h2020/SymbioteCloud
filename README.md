@@ -6,9 +6,9 @@ As a result of the following steps you will setup and run symbIoTe Cloud compone
  1. Installation of required tools for symbIoTe platform components
   
   Platform components require the following tools to be installed:
-  * RabbitMQ - message queue server for internal messaging between platform components
-  * MongoDB - database used by Registration Handler and Interworking Interface
-  * MySQL - database used by Resource Access Proxy (will be changed to MongoDB in Release 2)
+  * [RabbitMQ](https://www.rabbitmq.com/) - message queue server for internal messaging between platform components
+  * [MongoDB](https://www.mongodb.com/) - database used by Registration Handler and Interworking Interface
+  * [MySQL](https://www.mysql.com/) - database used by Resource Access Proxy (will be changed to MongoDB in Release 2)
 
   Besides that platform owner will need to provide a Java implementation of the platform-specific access to to the resources and their readings (observations). So some IDE for write code and Gradle for building and running of the components is required (use version 3, version 2.x can not build Registration Handler properly) . 
 
@@ -16,14 +16,14 @@ As a result of the following steps you will setup and run symbIoTe Cloud compone
 
   Platform components are available in the github, bundled in the following directory: https://github.com/symbiote-h2020/SymbioteCloud .
   
-  Master branches contain latest stable symbIoTe release version (starting from release 1), develop branch is a general development branch containing newest features that are added during development and particular feature branches where features are developed. 
+  The Component repositories contain three different branch types; master, develop and feature branches. Master branches contain the latest stable symbIoTe release version (starting from release 1). Develop branches are general development branches containing the newest features. Finally, feature branches are where particular features are developed. 
   
-  For symbIoTe cloud installation, following components are currently used and required to properly start platform in L1 compliance:
+  For symbIoTe cloud installation, the following components are currently used and required to properly make a platform L1-compliant:
 
   - CloudConfigService - service that distributes configuration among platform components
   - EurekaService - allows discovery of platform components
   - ZipkinService - collects logs from various services
-  - InterworkingInterface (abbr. II) - is used to forward communication from platform components to symbIoTe Core
+  - InterworkingInterface (abbr. II) - is used to forward communication from platform components to symbIoTe Core/applications
   - RegistrationHandler (abbr. RH) - service responsible for properly registering platform's resources and distribute this information among platform components
   - ResourceAccessProxy (abbr. RAP) - service responsible for providing access to the real readings of the platform's resources
 
@@ -45,7 +45,7 @@ As a result of the following steps you will setup and run symbIoTe Cloud compone
 ##2. Integration with symbIoTe
  1. Provide platform-specific access to the resource and data
 
-  Platform owner needs to extend PlatformSpecificPlugin class of the ResourceAccessProxy. Method that needs to be extended is readResource, accepting resourceId (id of the resource that is uses to identify the resource internally within a platform). Method must return a simple POJO object containing the current value of the resource with specified resourceId.
+  Platform owner needs to extend *PlatformSpecificPlugin* class of the *ResourceAccessProxy*. The method that needs to be extended is *readResource*, accepting *resourceId* (id of the resource that is uses to identify the resource internally within a platform). This method must return a simple POJO object containing the current value of the resource with specified resourceId.
 
   ``` 
   public Observation readResource(String resourceId) {
