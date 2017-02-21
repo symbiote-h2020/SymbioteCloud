@@ -85,16 +85,16 @@ As a result of the following steps you will setup and run symbIoTe Cloud compone
 
   The next step is to create a user in the symbIoTe Core Admin webpage. After creating the user and registering, the user needs to specify the description of their platform.
 
-   - Name - name of the platform
-   - Description - description of the platform
-   - Url - url of the platform's Interworking Interface which will provide entry point to sybmIoTe Cloud components. For the example we assume our platform's Interworking Interface is running on address http://myplatform.eu:8101/
-   - Information Model - used to differentiate between types of information models - to be used in the future when we provide support for platform specific information models.
+   - **Name** - name of the platform
+   - **Description** - description of the platform
+   - **Url** - url of the platform's Interworking Interface which will provide entry point to sybmIoTe Cloud components. For the example we assume our platform's Interworking Interface is running on address http://myplatform.eu:8101/
+   - **Information Model** - used to differentiate between types of information models (to be used in the future when we provide support for platform specific information models)
 
-  After registration of the platform portal displays the unique platformId that we will use for configuration in the next step.
+  After registration of the platform, the portal displays the unique **_platformId_** that we will use for configuration in the next step.
   
  3. Configuration of the symbIoTe Cloud components
 
-  Before starting symbIoTe Cloud components we need to provide proper configuration in the CloudConfigProperties component. Please edit application.properties file contained in this component. Platform owner needs to provide URL address of the CloudCoreInterface and platformId of the platform we registered. It also provides address where RAP service is running:
+  Before starting symbIoTe Cloud components we need to provide proper configuration in the *CloudConfigProperties* component. Please edit **application.properties** file contained in this component. Platform owner needs to provide URL address of the *CloudCoreInterface* and *platformId* of the platform we registered. It also provides address where RAP service is running:
    - symbIoTe.core.url=http://core.symbiote.eu:8100/cloudCoreInterface/v1/
    - platform.id=58a5a85e9bdddb4dfedb2495
    - rap.url=http://myplatform.eu:8100/
@@ -113,18 +113,18 @@ As a result of the following steps you will setup and run symbIoTe Cloud compone
 
   Starting symbIoTe Cloud components can be done in following steps:
 
-  1. Start RabbitMQ server
+  1.  Start RabbitMQ server
   2.  Start MongoDB server
   3.  Start MySQL server
   4.  Start symbIoTe Cloud components
-    - make sure to first start CloudConfigService, and after it is running start EurekaService
-    - after both services are running you can start rest of the components: ZipkinService, InterworkingInterface, ResourceHandler, ResourceAccessProxy
+    - make sure to first start *CloudConfigService*, and after it is running start *EurekaService*
+    - after both services are running you can start rest of the components: *ZipkinService*, *InterworkingInterface*, *ResourceHandler*, *ResourceAccessProxy*
 
   To start Cloud components you can use `gradle bootRun` task, or build and use `java -jar <build_target>.jar`
   
  5. Register resource
 
-  After our platform has been registered and symbIoTe Cloud components for our platform are configured and running we can proceed to expose some of our platform's resources to symbIoTe Core. It is done by sending HTTP POST request containing resource description on ResourceHandler's registration endpoint. Examplary description is shown below:
+  After your platform has been registered and symbIoTe Cloud components for your platform are configured and running, you can proceed to expose some of our platform's resources to symbIoTe Core. This is done by sending HTTP POST requests containing resource description on *ResourceHandler*'s registration endpoint. Examplary description is shown below:
   ```
   {
   "name": "Sensor1",
@@ -147,11 +147,11 @@ As a result of the following steps you will setup and run symbIoTe Cloud compone
   }
   ```
   #####NOTE:
-   - To register this sensor we POST it on our example setup's RH endpoint at http://myplatform.eu:8001/resource. RH uses II to communicate with symbIoTe Core to register our platform's resource. If the registration process is successful Core returns resource containing field symbioteId with unique, generated id of the resource in the symbIoTe Core layer. Information about the registered resource is distributed in Cloud components using RabbitMQ messaging.
+   - To register this sensor we POST it on our example setup's *RegistrationHandler* endpoint at http://myplatform.eu:8001/resource. *RegistrationHandler* uses *InterworkingInterface* to communicate with symbIoTe Core to register our platform's resource. If the registration process is successful, symbIoTe Core returns a resource description containing a field named **symbioteId**, which is a unique id generated in the symbIoTe Core layer. Information about the registered resource is distributed in Cloud components using RabbitMQ messaging.
 
 ##3. Test integrated resource
 
-After our resource has been shared with Core we can test if we can find and access it properly.
+After our resource has been shared with symbIoTe Core, we can test if we can find and access it properly.
 
  1. Search for resource
 
@@ -181,7 +181,7 @@ After our resource has been shared with Core we can test if we can find and acce
      - location_name
      - observed_property
 
-  For our example lets search for resources with name Sensor1. We do it by sending HTTP GET on symbIoTe Core Interface: http://core.symbiote.eu:8100/coreInterface/v1/query?name=Sensor1. Response containins a list of resources fulfilling the criteria:
+  For our example lets search for resources with name *Sensor1*. We can do this by sending an HTTP GET request on symbIoTe Core Interface: http://core.symbiote.eu:8100/coreInterface/v1/query?name=Sensor1. Response contains a list of resources fulfilling the criteria:
 
   ```
   [
@@ -219,9 +219,9 @@ After our resource has been shared with Core we can test if we can find and acce
  
  2. Obtaining resource access URL
 
-  To access the resource we need to ask symbIoTe Core for the access link. To do so we need to send HTTP GET request on http://core.symbiote.eu:8100/coreInterface/v1/resourceUrls?id=589dc62a9bdddb2d2a7ggab8
+  To access the resource we need to ask symbIoTe Core for the access link. To do this,  we need to send an HTTP GET request on http://core.symbiote.eu:8100/coreInterface/v1/resourceUrls?id=589dc62a9bdddb2d2a7ggab8
 
-  If we provided correct id of the resource we will get response containing URL to access the resource:
+  If we provided the correct id of the resource, we will get a response containing the URL to access the resource:
   ```
   {
     "589dc62a9bdddb2d2a7ggab8": "http://myplatform.eu:8101/rap/Sensor('589dc62a9bdddb2d2a7ggab8')"
@@ -230,7 +230,7 @@ After our resource has been shared with Core we can test if we can find and acce
   
  3. Accessing the resource and triggering fetching of our example data
 
-  Accessing the URL link we retrieved from the previous step calls Interworking Interface of our platform and forwards the access request to the RAP component. RAP searches for the resource with id specified in the URL and looks for internal resource id of this resource. Method we created in point 2.1 is called to retrieve value of the resource with internal id and observation is returned.
+  For an application to access the URL link retrieved from the previous step, it has to send an HTTP GET request to the *Interworking Interface* of the platform, which forwards the access request to the RAP component. RAP searches for the a resource with the *internal id* specified in the URL. The method  created in section 2.1 is then called to retrieve the value of the resource.
 
   `HTTP GET` on http://myplatform.eu:8101/rap/Sensor('589dc62a9bdddb2d2a7ggab8') results in:
 
