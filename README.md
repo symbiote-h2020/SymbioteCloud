@@ -281,17 +281,17 @@ After our resource has been shared with symbIoTe Core, we can test if we can fin
   
 ##4. Alternative approach to provide L1 compliance
 
-There also exists altearnative approach to provide L1 platform compliance.It's more lightweight in terms of amount of cloud components that must be downloaded and configured, but requires more manual coding to provide proper registration and handling of the resources. To follow this approach you only need to download the Resource Access Proxy component. For the example we will create a simple java application that will register the resource in symbIoTe Core and infrom RAP about the new resource using RabbitMQ.
+There also exists altearnative approach to provide L1 platform compliance. It is more lightweight in terms of amount of cloud components that must be downloaded and configured, but requires more manual coding to provide proper registration and handling of the resources. To follow this approach you only need to download the Resource Access Proxy component. For the example, we will create a simple java application that will register the resource in symbIoTe Core and inform RAP about the new resource using RabbitMQ.
 
 Here are the more detailed steps:
 
- 1. Write platform-specific implementation of RAP plugin (similar to point 2.1 from original description) where we provide readResource(String platformResourceId) implementation to access specific resource for observation value.
+ 1. Write platform-specific implementation of RAP plugin (similar to point 2.1 from original description) where we provide ```readResource(String platformResourceId)``` implementation to access specific resource for observation value.
  2. Register the platform using Admin GUI (point 2.2). Platform's URL should point in this case to where the RAP instance will be running directly.
  3. Start MySQL and RAP instance.
- 4. We need to write some code that will register our resource in symbIoTe Core, using HTTP POST CloudCoreInterface endpoint.
+ 4. We need to write some code that will register our resource in symbIoTe Core, by sending HTTP POST requests to CloudCoreInterface endpoint.
 
-   - We need to create registration request. Simplest way is to create POJO object https://github.com/symbiote-h2020/CloudCoreInterface/blob/develop/src/main/java/eu/h2020/symbiote/model/Resource.java, populate it with values for our resource.Remember that in this case resourceURL that you specify for your resource should point directly to your RAP instance (the same URL you specified in 2.)
-   - Use some POJO->JSON tools (Jackson, GSON etc.) to change it into JSON and post it to CloudCoreInterface endpoint of our platform. Address of the endpoint is http://core.symbiote.eu:8100/cloudCoreInterface/v1/platforms/<platformId>/resources so in case of our platform it is: http://core.symbiote.eu:8100/cloudCoreInterface/v1/platforms/589dc62a9bdddb2d2a7ggab8/resources
+   - We need to create registration request. Simplest way is to create a POJO object https://github.com/symbiote-h2020/CloudCoreInterface/blob/develop/src/main/java/eu/h2020/symbiote/model/Resource.java and populate it with values for our resource. Remember that in this case the *resourceURL* that you specify for your resource should point directly to your RAP instance (the same URL you specified in 2.)
+   - Use some POJO->JSON tools (Jackson, GSON etc.) to change it into JSON and post it to CloudCoreInterface endpoint. Address of the endpoint is http://core.symbiote.eu:8100/cloudCoreInterface/v1/platforms/<platformId>/resources, so in case of your platform it is: http://core.symbiote.eu:8100/cloudCoreInterface/v1/platforms/589dc62a9bdddb2d2a7ggab8/resources
 
   Example of the final JSON representation of our object should look like this:
   
@@ -317,6 +317,6 @@ Here are the more detailed steps:
     "resourceURL": "http://myplatform.eu:8100/"
   }
   ```
- 5. Parse the response (which is also Resource object) and retrieve id from it. This is the symbIoTe generated id of our resource.
- 6. Next step is to inform the RAP about the resource. To do so you need to prepare and send message on exchange symbIoTe.rap amd queue symbIoTe.rap.registrationHandler.register_resources.The message that is expected is again simple JSON which contains two fields: inernalId and id. InternalId is your platform's internal id of the resource and id is symbIoTe-generated id of the resource from previous step.
- 7. If every step was successful your resource should be accessible the same as resources registered using full stack of symbIoTe cloud. You can use tests described in point 3.
+ 5. Parse the response (which is also a *Resource* object) and retrieve the *id* from it. This is the symbIoTe generated id of our resource.
+ 6. Next step is to inform *RAP* about the resource. To do so you need to prepare and send message on exchange *symbIoTe.rap* with a routing key *symbIoTe.rap.registrationHandler.register_resources*.The message that is expected is again simple JSON which contains two fields: *internalId* and *id*. *InternalId* is your platform's internal id of the resource and *id* is symbIoTe-generated id of the resource from previous step.
+ 7. If every step was successful your resource should be accessible the same way as resources registered using full stack of symbIoTe cloud. You can use tests described in point 3.
