@@ -285,7 +285,7 @@ There also exists altearnative approach to provide L1 platform compliance. It is
 
 Here are the more detailed steps:
 
- 1. Write platform-specific implementation of RAP plugin (similar to point 2.1 from original description) where we provide ```readResource(String platformResourceId)``` implementation to access specific resource for observation value.
+ 1. Write platform-specific implementation of RAP plugin (similar to point 2.1 from original description), where you provide ```readResource(String resourceId)``` implementation to access specific resource for observation value.
  2. Register the platform using Admin GUI (point 2.2). Platform's URL should point in this case to where the RAP instance will be running directly.
  3. Start MySQL and RAP instance.
  4. We need to write some code that will register our resource in symbIoTe Core, by sending HTTP POST requests to CloudCoreInterface endpoint.
