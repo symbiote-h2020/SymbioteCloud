@@ -192,9 +192,9 @@ Here's a quick list of actions and features that RAP platform specific plugin ha
 * Forwards notifications coming from platform to generic RAP
 
 At the beginning, the platform plugin application has to register to the generic RAP, sending a message to exchange `symbIoTe.rapPluginExchange` with key `symbIoTe.rapPluginExchange.add-plugin`, with some information included: 
-* the platform ID (a custom string)
-* a boolean flag specifying if it supports notifications
-* a boolean flag specifying if it supports filters. 
+1. the platform ID (a custom string)
+2. a boolean flag specifying if it supports notifications
+3. a boolean flag specifying if it supports filters. 
 This is the message format expected during plugin registration:
 ```
 {
@@ -222,242 +222,417 @@ Depending on if the platform can natively support filters/notifications, differe
 2. Notifications:
   *  Enable/disable flag in CloudConfigProperties -> rap.northbound.interface.WebSocket=true/false
 
-#### 2. Register user and configure platform
+In order to receive messages for accessing resources, platform plugin shall create an exchange with name plugin-exchange and then bind to it the following: get, set, history, subscribe, unsubscribe. Access features supported are:
+* Read current value from resource, e.g.:
+```
+{
+  "resourceInfo" : {
+    "symbioteId" : "abcdefgh",
+    "internalId" : "123456",
+    "observedProperties" : [ "temperature" ]
+  },
+  "type" : "GET"
+}
+```
+* Read history values from resource, e.g.:
+```
+{
+  "resourceInfo" : {
+    "symbioteId" : "abcdefgh",
+    "internalId" : "123456",
+    "observedProperties" : [ "temperature" ]
+  },
+  "filter" : {
+    "type" : "expr",
+    "param" : "[obsValue, temperature]",
+    "cmp" : "EQ",
+    "val" : "20"
+  },
+  "type" : "HISTORY"
+}
+```
+The read history values can be received with or without filters, depending on whether the plugin is supporting filters or not.
 
-  The next step is to create a user in the symbIoTe Core Admin webpage. After creating the user and registering, the user needs to specify the description of their platform.
-
-   - **Name** - name of the platform
-   - **Description** - description of the platform
-   - **Url** - url of the platform's Interworking Interface which will provide entry point to sybmIoTe Cloud components. For the example we assume our platform's Interworking Interface is running on address http://myplatform.eu:8101/
-   - **Information Model** - used to differentiate between types of information models (to be used in the future when we provide support for platform specific information models)
-
-  After registration of the platform, the portal displays the unique **_platformId_** that we will use for configuration in the next step.
-  
- 3. Configuration of the symbIoTe Cloud components
-
-  Before starting symbIoTe Cloud components we need to provide proper configuration in the *CloudConfigProperties* component. Please edit **application.properties** file contained in this component. Platform owner needs to provide URL address of the *CloudCoreInterface* and *platformId* of the platform we registered. It also provides address where RAP service is running:
-   - symbIoTe.core.url=http://core.symbiote.eu:8100/cloudCoreInterface/v1/
-   - platform.id=58a5a85e9bdddb4dfedb2495
-   - rap.url=http://myplatform.eu:8100/
-
-  RAP configuration is done in ResourceAccessProxy component itself - file `src/main/resources/bootstrap.properties` needs to be editted to provide MySQL database configuration:
-  ```
-  # DataSource settings: set here your own configurations for the database
-  # connection.
-  spring.datasource.url = jdbc:mysql://localhost:3306/symbioterap
-  spring.datasource.username = user
-  spring.datasource.password = pass
-  ```
-  Create the MySQL database you specified in application.properties file (it will not be created on first deployment automatically).
-  
- 4. Starting of the symbIoTe Cloud components
-
-  Starting symbIoTe Cloud components can be done in following steps:
-
-  1.  Start RabbitMQ server
-  2.  Start MongoDB server
-  3.  Start MySQL server
-  4.  Start symbIoTe Cloud components
-    - make sure to first start *CloudConfigService*, and after it is running start *EurekaService*
-    - after both services are running you can start rest of the components: *ZipkinService*, *InterworkingInterface*, *ResourceHandler*, *ResourceAccessProxy*
-
-  To start Cloud components you can use `gradle bootRun` task, or build and use `java -jar <build_target>.jar`
-  
- 5. Register resource
-
-  After your platform has been registered and symbIoTe Cloud components for your platform are configured and running, you can proceed to expose some of our platform's resources to symbIoTe Core. This is done by sending HTTP POST requests containing resource description on *ResourceHandler*'s registration endpoint. Examplary description is shown below:
-  ```
-  {
-  "name": "Sensor1",
-  "owner": "PlatformAOwner",
-  "description": "This is a test sensor",
-  "resourceURL" : "http://myplatform.eu:8101/",
-  "internalId": "1234",
-  "location":
-   {
-   "name": "Poznan",
-   "description": "Poznan - malta",
-   "longitude": 16.940144,
-   "latitude": 52.421790,
-   "altitude": 100.0
-   },
-  "observedProperties":
-   [
-   "Temperature"
-   ]
-  }
-  ```
-  #####NOTE:
-   - To register this sensor we POST it on our example setup's *RegistrationHandler* endpoint at http://myplatform.eu:8001/resource. *RegistrationHandler* uses *InterworkingInterface* to communicate with symbIoTe Core to register our platform's resource. If the registration process is successful, symbIoTe Core returns a resource description containing a field named **symbioteId**, which is a unique id generated in the symbIoTe Core layer. Information about the registered resource is distributed in Cloud components using RabbitMQ messaging.
-
-##3. Test integrated resource
-
-After our resource has been shared with symbIoTe Core, we can test if we can find and access it properly.
-
- 1. Search for resource
-
-  To search for resource we need to create a query to the symbIoTe Core. In our example we use http://core.symbiote.eu:8100/coreInterface/v1/query endpoint and provide parameters for query. All possible query parameters can be seen below:
-  ```
-  Query parameters {
-           platform_id:           String
-           platform_name:         String
-           owner:                 String
-           name:                  String
-           id:                    String
-           description:           String
-           location_name:         String
-           location_lat:          Double
-           location_long:         Double
-           max_distance:          Integer
-           observed_property:     List<String>
-  }
-  ```
-  #####NOTES:
-   - To query using geospatial properties, all 3 properties need to be set: location_lat (latitude), location_long (longitude) and max_distance (distance from specified point in meters).
-   - Text parameters allow substring searches using '*' character which can be placed at the beginning and/or end of the word to search for. For example querying for name: Sensor* finds all resources with name starting with Sensor, and search for name: *12* will find all resources containing string "12" in its name. Using substring search can be done for the following fields:
-     - name
-     - platform_name
-     - owner
-     - description
-     - location_name
-     - observed_property
-
-  For our example lets search for resources with name *Sensor1*. We can do this by sending an HTTP GET request on symbIoTe Core Interface: http://core.symbiote.eu:8100/coreInterface/v1/query?name=Sensor1. Response contains a list of resources fulfilling the criteria:
-
-  ```
-  [
-    {
-
-      "platformId": "589c783a9bdddb2d2a7gea92",
-
-      "platformName": "PlatformA",
-
-      "owner": "PlatformAOwner",
-
-      "name": "Sensor1",
-
-      "id": "589dc62a9bdddb2d2a7ggab8",
-
-      "description": "This is a test sensor",
-
-      "locationName": "Poznan",
-
-      "locationLatitude": 52.42179,
-
-      "locationLongitude": 16.940144,
-
-      "locationAltitude": 100,
-
-      "observedProperties": [
-
-        "Temperature"
-
-      ]
-      
-    }
-  ]
-  ```
- 
- 2. Obtaining resource access URL
-
-  To access the resource we need to ask symbIoTe Core for the access link. To do this,  we need to send an HTTP GET request on http://core.symbiote.eu:8100/coreInterface/v1/resourceUrls?id=589dc62a9bdddb2d2a7ggab8
-
-  If we provided the correct id of the resource, we will get a response containing the URL to access the resource:
-  ```
-  {
-    "589dc62a9bdddb2d2a7ggab8": "http://myplatform.eu:8101/rap/Sensor('589dc62a9bdddb2d2a7ggab8')"
-  }
-  ```
-  
- 3. Accessing the resource and triggering fetching of our example data
-
-  For an application to access the URL link retrieved from the previous step, it has to send an HTTP GET request to the *Interworking Interface* of the platform, which forwards the access request to the RAP component. RAP searches for the a resource with the *internal id* specified in the URL. The method  created in section 2.1 is then called to retrieve the value of the resource.
-
-  `HTTP GET` on http://myplatform.eu:8101/rap/Sensor('589dc62a9bdddb2d2a7ggab8') results in:
-
-  ```
-  {
-    "headers": {
-      "X-Application-Context": [
-        "ResourceAccessProxy:8100"
-      ],
-      "Content-Type": [
-        "application/json;charset=UTF-8"
-      ],
-      "Transfer-Encoding": [
-        "chunked"
-      ],
-      "Date": [
-        "Wed, 15 Feb 2017 14:12:49 GMT"
-      ]
-    },
-    "body": {
-      "resultTime": 1487167969540,
-      "resourceId": "symbIoTeID1",
-      "samplingTime": 1487167968540,
-      "location": {
-        "longitude": 16.940144,
-        "latitude": 52.42179,
-        "altitude": 100,
-        "name": "Poznan",
-        "description": "Poznan test"
-      },
-      "obsValue": {
-        "value": 7,
-        "obsProperty": {
-          "label": "Temperature",
-          "comment": "Air temperature"
+* Write value into resource. When a write access is requested, the body of the message will also include parameters needed for the actuation, in a format that depends on the resource accessed:
+```
+{
+  "inputParameters":
+    [  
+        {
+             "name": “prop1Name",
+             "value": “prop1Value“
         },
-        "uom": {
-          "symbol": "C",
-          "label": "degree Celsius",
-          "comment": null
+        {
+              "name": “prop2Name",
+              "value": “prop2Value“
+        },
+        …
+    ]
+}
+```
+e.g.:
+```
+{
+  "resourceInfo" : {
+    "symbioteId" : "bcdefghi",
+    "internalId" : "234567",
+    "observedProperties" : [ "light" ]
+  },
+  "inputParameters" : [ {
+    "array" : false,
+    "name" : "light",
+    "value" : "100"
+  } ],
+  "type" : "SET"
+}
+```
+The notifications mechanism follows a different flow than the direct resource access and needs specific a rabbitMQ queues to be used.
+
+1. The platform plugin will receive subscription/unsubscription requests from the *plugin-exchange*, using *subscribe/unsubscribe* topic keys. The message will contain a list of resource IDs.
+2. Notifications should be sent from platform plugin to generic RAP to exchange `symbIoTe.rapPluginExchange-notification` with a routing key `symbIoTe.rapPluginExchange.plugin-notification`. 
+
+All returned messages from read accesses (GET, HISTORY and notifications) are modeled as an instance of *eu.h2020.symbiote.core.model.Observation* class, e.g.:
+```
+[
+  {
+    "resourceId": "abcdefgh", 
+    "location": {
+      "longitude": 150.89, 
+      "latitude": 23.56, 
+      "altitude": 343.74
+    }, 
+    "resultTime": "2017-05-17T10:35:50", 
+    "samplingTime": "2017-05-17T10:35:50", 
+    "obsValues": [
+      {
+        "value": 21, 
+        "uom": { 
+		  "symbol": "°C",
+          "label": "Celsius",
+          "comment": "Celsius degrees" }, 
+        "obsProperty": {
+          "label": "temperature", 
+          "comment": "temperature in degrees"
         }
       }
-    },
-    "statusCode": "OK",
-    "statusCodeValue": 200
+    ]
   }
+]
+```
+
+
+#### 2. Register user and configure platform
+
+The next step is to create a platform owner user in the symbIoTe Core Admin webpage. During registration, it is also necessary to specify some platform details that are needed for security purposes. These are:
+* Name - name of the platform
+* Address - url of the platform's Interworking Interface which will provide entry point to sybmIoTe Cloud components.
+* Id - a preferred id for the platform. It is optional, if not provided symbiote will generate one for you
+# ADD Figure
+
+After registering the user, you will be given your user's certificate and key. You will need to store these somewhere, since you can not re-display them, only issue new ones. This limitation is only for release 0.2.0.
+# ADD Figure
+
+Afterwards, you can log in as the new user and activate your platform, by supplying other secondary platform details:
+* Description - description of the platform
+* Information Model - used to differentiate between types of information models - to be used in the future when we provide support for platform specific information models.
+# ADD Figure
+
+Finally, your platform should be active, and all necessary details (like platform id can be seen or modified)
+# ADD Figure
+
+#### 3. Configuration of the symbIoTe Cloud components
+
+Before starting symbIoTe Cloud components we need to provide proper configuration in the CloudConfigProperties component. Please edit `application.properties` file contained in this component and provide the following information:
+```
+rabbit.host=<TODO set properly>
+rabbit.username=<TODO set properly (e.g. guest for localhost)>
+rabbit.password=<TODO set properly (e.g. guest for localhost)>
+security.user=<TODO set properly (username used during registration)>
+security.password=<TODO set properly (password used during registration)>
+symbiote.coreaam.url=<TODO set properly (format: http://{nginxIp}:{nginxPort}/coreInterface/v1 e.g. http://localhost:8102/coreInterface/v1)>
+platform.id=<TODO set properly>
+symbIoTe.interworkinginterface.url=<TODO set properly (format: http://{nginxIp}:{nginxPort}/cloudCoreInterface/v1 e.g. http://localhost:8102/cloudCoreInterface/v1)>
+```
+#### 4.  Setting up the Platform Authentication and Authorization Manager
+
+#### 5. Starting symbIoTe Cloud components
+
+Starting symbIoTe Cloud components can be done in following steps:
+
+1.  Start RabbitMQ server
+2.  Start MongoDB server
+3.  Start MySQL server
+4.  Start symbIoTe Cloud components
+  - make sure to first start *CloudConfigService*, and after it is running start *EurekaService*
+  - after both services are running you can start rest of the components: *ZipkinService*, *RegistrationHandler*,      *ResourceAccessProxy*, *CloudAuthenticationAuthorizationManager*, *Monitoring*
+
+To build and run the components you can issue:
+```
+gradle assemble
+java -jar build/libs/{Component}
+```
+
+#### 6. Register resource
+
+After our platform has been registered and symbIoTe Cloud components for our platform are configured and are running, we can proceed to expose some of our platform's resources to symbIoTe Core. List of properties that are supported in the description in R2 can be found here: List of properties supported in R2 (BIM + imported models). This is done by sending *HTTP POST* request containing resource description on *RegistrationHandler*'s registration endpoint (i.e. http://myplatform.eu:8102/rh/resources). Exemplary description is shown below:
   ```
-  
-##4. Alternative approach to provide L1 compliance
-
-There also exists altearnative approach to provide L1 platform compliance. It is more lightweight in terms of amount of cloud components that must be downloaded and configured, but requires more manual coding to provide proper registration and handling of the resources. To follow this approach you only need to download the Resource Access Proxy component. For the example, we will create a simple java application that will register the resource in symbIoTe Core and inform RAP about the new resource using RabbitMQ.
-
-Here are the more detailed steps:
-
- 1. Write platform-specific implementation of RAP plugin (similar to point 2.1 from original description), where you provide ```readResource(String resourceId)``` implementation to access specific resource for observation value.
- 2. Register the platform using Admin GUI (point 2.2). Platform's URL should point in this case to where the RAP instance will be running directly.
- 3. Start MySQL and RAP instance.
- 4. We need to write some code that will register our resource in symbIoTe Core, by sending HTTP POST requests to CloudCoreInterface endpoint.
-
-   - We need to create registration request. Simplest way is to create a POJO object https://github.com/symbiote-h2020/CloudCoreInterface/blob/develop/src/main/java/eu/h2020/symbiote/model/Resource.java and populate it with values for our resource. Remember that in this case the *resourceURL* that you specify for your resource should point directly to your RAP instance (the same URL you specified in 2.)
-   - Use some POJO->JSON tools (Jackson, GSON etc.) to change it into JSON and post it to CloudCoreInterface endpoint. Address of the endpoint is http://core.symbiote.eu:8100/cloudCoreInterface/v1/platforms/<platformId>/resources, so in case of your platform it is: http://core.symbiote.eu:8100/cloudCoreInterface/v1/platforms/589dc62a9bdddb2d2a7ggab8/resources
-
-  Example of the final JSON representation of our object should look like this:
-  
-  ```
+  [
   {
-   "name": "Sensor1",
-   "owner": "PlatformAOwner",
-   "description": "This is a test sensor,
-   "featureOfInterest": "foi1",
-   "platformId": "589dc62a9bdddb2d2a7ggab8",
-   "location":
-    {
-     "name": "Poznan",
-     "description": "Poznan - malta",
-     "longitude":     16.940144,
-     "latitude":     52.421790,
-     "altitude": 100
+    "internalId": "1600",
+    "cloudMonitoringHost": "cloudMonitoringHostIP",
+    "resource": {
+      "@c": ".StationarySensor",
+      "labels": [
+        "lamp"
+      ],
+      "comments": [
+        "A comment"
+      ],
+      "interworkingServiceURL": "http://symbiote-h2020.eu/example/interworkingService/",
+	  "locatedAt": {
+        "@c": ".WGS84Location",
+        "longitude": 2.349014,
+        "latitude": 48.864716,
+        "altitude": 15,
+        "name": "Paris",
+        "description": "This is paris"
+      },
+	  "featureOfInterest": {
+	    "labels": [
+	      "Room1"
+	    ],
+	    "comments": [
+	      "This is room 1"
+	    ],
+	    "hasProperty": [
+	      "temperature"
+	    ]
+	 },
+ 	 "observesProperty": [
+	   "temperature",
+  	   "humidity"
+	 ]
      },
-   "observedProperties":
-    [
-     "Temperature"
-    ],
-    "resourceURL": "http://myplatform.eu:8100/"
-  }
+     "params": {
+       "type": "Type of device, used in monitoring"
+     }
+  },
+  {
+    "internalId": "1700",
+    "cloudMonitoringHost": "cloudMonitoringHostIP",
+    "resource": {
+  		"@c": ".Actuator",
+  		"id": "actuator1",
+		"labels": [
+		    "Actuator 1"
+		],
+	    "comments": [
+	    	"This is actuator 1"
+	    ],
+ 	    "interworkingServiceURL": "http://symbiote-h2020.eu/example/interworkingService/",
+  		"locatedAt": {
+		    "@c": ".WGS84Location",
+		    "longitude": 2.349014,
+		    "latitude": 48.864716,
+		    "altitude": 15,
+		    "name": "Paris",
+		    "description": "This is paris"
+		},
+	    "capabilites": [
+		    {
+	        "@c": ".ActuatingService",
+      		"id": "actuatingService1",
+		    "labels": [
+        		"Actuating Service 1"
+		    ],
+		    "comments": [
+        		"This is actuating service 1"
+	        ],
+		    "interworkingServiceURL": "http://symbiote-h2020.eu/example/interworkingService/",
+	        "name": "actuatingService1Name",
+	        "outputParameter": {
+				"array": false,
+		        "isArray": false,
+		        "datatype": "xsd:string"
+	        },
+	        "inputParameter": [
+		        {
+        		"array": false,
+	            "isArray": false,
+	            "datatype": "xsd:string",
+	            "name": "inputParam1",
+		        "mandatory": true,
+	            "restrictions": [
+		            {
+		              "@c": ".RangeRestriction",
+		              "min": 2,
+		              "max": 10
+		            }
+       	 	   ]
+	           }
+		   ],
+	       "actsOn": {
+		       "labels": [
+		          "Room1"
+		       ],
+	           "comments": [
+		          "This is room 1"
+	           ],
+		       "hasProperty": [
+		          "temperature"
+	           ]
+	      },
+    	  "affects": [
+    		    "temperature"
+	      ]
+    	}
+	  ]
+	},
+     "params": {
+       "type": "Type of device, used in monitoring"
+     }
+ }
+]
   ```
- 5. Parse the response (which is also a *Resource* object) and retrieve the *id* from it. This is the symbIoTe generated id of our resource.
- 6. Next step is to inform *RAP* about the resource. To do so you need to prepare and send message on exchange *symbIoTe.rap* with a routing key *symbIoTe.rap.registrationHandler.register_resources*.The message that is expected is again simple JSON which contains two fields: *internalId* and *id*. *InternalId* is your platform's internal id of the resource and *id* is symbIoTe-generated id of the resource from previous step.
- 7. If every step was successful your resource should be accessible the same way as resources registered using full stack of symbIoTe cloud. You can use tests described in point 3.
+##### NOTE:
+The *interworkingServiceURL* of each resource should be the same with the *interworkingServiceURL* specified during platform registration. RH uses II (i.e. nginx) to communicate with symbIoTe Core to register our platform's resource. If the registration process is successful Core returns resource containing field id (i.e. symbIoTeId) with unique, generated id of the resource in the symbIoTe Core layer. Information about the registered resource is distributed in Cloud components using RabbitMQ messaging.
+
+#### 2.7 Update resources
+
+After registering resources, it is also possible to update them. This is done by sending *HTTP PUT* request containing resource description on *RegistrationHandler*'s update endpoint (i.e. http://myplatform.eu:8102/rh/resources). Exemplary description is shown below:
+```
+[
+  {
+    "internalId": "1600",
+    "cloudMonitoringHost": "cloudMonitoringHostIP",
+    "resource": {
+      "@c": ".StationarySensor",
+      "id": "symbIoTeId1",
+      "labels": [
+        "lamp"
+      ],
+      "comments": [
+        "Another comment"
+      ],
+      "interworkingServiceURL": "http://symbiote-h2020.eu/example/interworkingService/",
+	  "locatedAt": {
+        "@c": ".WGS84Location",
+        "longitude": 2.349014,
+        "latitude": 48.864716,
+        "altitude": 15,
+        "name": "Paris",
+        "description": "This is paris"
+      },
+	  "featureOfInterest": {
+	    "labels": [
+	      "Room1"
+	    ],
+	    "comments": [
+	      "This is room 1"
+	    ],
+	    "hasProperty": [
+	      "temperature"
+	    ]
+	 },
+ 	 "observesProperty": [
+	   "temperature",
+  	   "humidity"
+	 ]
+     },
+     "params": {
+       "type": "Type of device, used in monitoring"
+     }
+  },
+  {
+    "internalId": "1700",
+    "cloudMonitoringHost": "cloudMonitoringHostIP",
+    "resource": {
+  		"@c": ".Actuator",
+  		"id": "actuator1",
+		"labels": [
+		    "Actuator 1 - modified"
+		],
+	    "comments": [
+	    	"This is modified actuator 1"
+	    ],
+ 	    "interworkingServiceURL": "http://symbiote-h2020.eu/example/interworkingService/",
+  		"locatedAt": {
+		    "@c": ".WGS84Location",
+		    "longitude": 2.349014,
+		    "latitude": 48.864716,
+		    "altitude": 15,
+		    "name": "Paris",
+		    "description": "This is paris"
+		},
+	    "capabilites": [
+		    {
+	        "@c": ".ActuatingService",
+      		"id": "actuatingService1",
+		    "labels": [
+        		"Actuating Service 1"
+		    ],
+		    "comments": [
+        		"This is actuating service 1"
+	        ],
+		    "interworkingServiceURL": "http://symbiote-h2020.eu/example/interworkingService/",
+	        "name": "actuatingService1Name",
+	        "outputParameter": {
+				"array": false,
+		        "isArray": false,
+		        "datatype": "xsd:string"
+	        },
+	        "inputParameter": [
+		        {
+        		"array": false,
+	            "isArray": false,
+	            "datatype": "xsd:string",
+	            "name": "inputParam1",
+		        "mandatory": true,
+	            "restrictions": [
+		            {
+		              "@c": ".RangeRestriction",
+		              "min": 2,
+		              "max": 10
+		            }
+       	 	   ]
+	           }
+		   ],
+	       "actsOn": {
+		       "labels": [
+		          "Room1"
+		       ],
+	           "comments": [
+		          "This is room 1"
+	           ],
+		       "hasProperty": [
+		          "temperature"
+	           ]
+	      },
+    	  "affects": [
+    		    "temperature"
+	      ]
+    	}
+	  ]
+	},
+     "params": {
+       "type": "Type of device, used in monitoring"
+     }
+  }
+]
+```
+
+##### Note
+The *interworkingServiceURL* of each resource should be the same with the *interworkingServiceURL* specified during platform registration. RH uses II (i.e. nginx) to communicate with symbIoTe Core to update our platform's resource. The *id* of each resource should be the same *id* returned during registration.
+
+#### 2.8 Delete resources
+
+After registering resources, it is also possible to delete them. This is done by sending *HTTP DELETE* request containing the internal ids on *ResourceHandler*'s delete endpoint (e.g. http://myplatform.eu:8102/rh/resources?resourceInternalId=1600,1700).
+
+
+
+
+
+
+
+
+
