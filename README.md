@@ -2,88 +2,227 @@
 
 As a result of the following steps you will setup and run symbIoTe Cloud components for your platform. You will also register your platform and resources in symbIoTe Core offered by symbIoTe project, which collects the metadata for all symbIoTe-enabled platforms. This will allow other symbIoTe users to use the Core to search and access resources that have been shared by you.
 
-##1. Preparation steps.
- 1. Installation of required tools for symbIoTe platform components
+## 1. Preparation steps.
+#### 1.1 Installation of required tools for symbIoTe platform components
   
   Platform components require the following tools to be installed:
   * [RabbitMQ](https://www.rabbitmq.com/) - message queue server for internal messaging between platform components
   * [MongoDB](https://www.mongodb.com/) - database used by Registration Handler and Interworking Interface
-  * [MySQL](https://www.mysql.com/) - database used by Resource Access Proxy (will be changed to MongoDB in Release 2)
-
-  Besides that platform owner will need to provide a Java implementation of the platform-specific access to to the resources and their readings (observations). So some IDE for write code and Gradle for building and running of the components is required (use version 3, version 2.x can not build Registration Handler properly) . 
-
- 2. Download symbIoTe platform components.
-
-  Platform components are available in the github:
-  * If you just want to deploy but not develop/commit any changes, you can get all components straight from the superproject:   `git clone --recursive https://github.com/symbiote-h2020/SymbioteCloud.git`
-  * If you want to download the repos for development purposes, you need to clone them individually into separate folders
-  
-  The Component repositories contain three different branch types; master, develop and feature branches. Master branches contain the latest stable symbIoTe release version (starting from release 1). Develop branches are general development branches containing the newest features. Finally, feature branches are where particular features are developed. 
-  
-  For symbIoTe cloud installation, the following components are currently used and required to properly make a platform L1-compliant:
-
-  - CloudConfigService - service that distributes configuration among platform components
-  - EurekaService - allows discovery of platform components
-  - ZipkinService - collects logs from various services
-  - InterworkingInterface (abbr. II) - is used to forward communication from platform components to symbIoTe Core/applications
-  - RegistrationHandler (abbr. RH) - service responsible for properly registering platform's resources and distribute this information among platform components
-  - ResourceAccessProxy (abbr. RAP) - service responsible for providing access to the real readings of the platform's resources
-
-  There is also another project that needs to be downloaded and set up properly, containing configuration of the symbIoTe Cloud components, which can be found in https://github.com/symbiote-h2020/CloudConfigProperties
-
-  - CloudConfigProperties - contains a list of properties to configure platform components. It must be either:
-    - deployed in `$HOME/git/symbiote/CloudConfigProperties` or 
-    - property spring.cloud.config.server.git.uri must be properly set in `src/main/resources/bootstrap.properties` of CloudConfigService component.
-
-  For the example integration process described below we assume the following addresses of various Core and Cloud components:
-
-  - Admin GUI                        http://core.symbiote.eu:8250
-  - Cloud Core Interface        http://core.symbiote.eu:8101/cloudCoreInterface/v1/
-  - Core Interface                   http://core.symbiote.eu:8100/coreInterface/v1/
-  - Registration Handler         http://myplatform.eu:8001/
-  - Interworking Interface       http://myplatform.eu:8101/
-  - Resource Access Proxy   http://myplatform.eu:8100/
-
-##2. Integration with symbIoTe
- 1. Provide platform-specific access to the resource and data
-
-  Platform owner needs to extend *PlatformSpecificPlugin* class of the *ResourceAccessProxy*. The method that needs to be extended is *readResource*, accepting *resourceId* (id of the resource that is uses to identify the resource internally within a platform). This method must return a simple POJO object containing the current value of the resource with specified resourceId.
-
-  ``` 
-  public Observation readResource(String resourceId) {
-      Observation value = null;
-      //
-      // INSERT HERE: query to the platform with internal resource id
-      //
-      return value;
-  }
-  ``` 
-
-  Example of the implementation returning just a simple value can be seen below.
-
+  * [Icinga 2](https://www.icinga.com/products/icinga-2/) - for monitoring the registered resources
+  * [Nginx](https://www.nginx.com/resources/admin-guide/installing-nginx-open-source/) - replaced Interworking Interface component of Release 0.1.0
+    * Nginx needs to be configured so that it redirects correctly to the various components.  (more instructions [here](http://nginx.org/en/docs/beginners_guide.html))
+This can be done by the placing following nginx.conf in `/usr/local/nginx/conf`, `/etc/nginx`, or `/usr/local/etc/nginx`.
+(If there are issues, it may be better to simply copy the `server {...}` part in the default config file in `/etc/nginx/nginx.conf` (in Ubuntu/Debian)
   ```
-  public Observation readResource(String resourceId) {
-      Observation value = null;
-      System.out.println("Reading resource");
-
-
-
-      String sensorId = "symbIoTeID1";
-
-      WGS84Location loc = new WGS84Location(16.940144, 52.42179, 100, "Poznan", "Poznan test");
-
-      long timestamp = System.currentTimeMillis();
-
-
-
-      ObservationValue obsval = new ObservationValue((double)7, new Property("Temperature", "Air temperature"), new UnitOfMeasurement("C", "degree Celsius", ""));
-      value = new Observation(sensorId, loc, timestamp, timestamp-1000 , obsval);
-
-      return value;
-  }
-  ```
+  user  nginx;
+worker_processes  1;
  
- 2. Register user and configure platform
+error_log  /var/log/nginx/error.log warn;
+pid        /var/run/nginx.pid;
+ 
+ 
+events {
+    worker_connections  1024;
+}
+ 
+ 
+http {
+    include       /etc/nginx/mime.types;
+    default_type  application/octet-stream;
+ 
+    log_format  main  '$remote_addr - $remote_user [$time_local] "$request" '
+                      '$status $body_bytes_sent "$http_referer" '
+                      '"$http_user_agent" "$http_x_forwarded_for"';
+ 
+    access_log  /var/log/nginx/access.log  main;
+ 
+    sendfile        on;
+    #tcp_nopush     on;
+ 
+    keepalive_timeout  65;
+ 
+    #gzip  on;
+ 
+    #include /etc/nginx/conf.d/*.conf;
+ 
+    server {
+        ## NOTE: This should match the Interworking Interface port in the CloudConfigProperties
+        listen       8102 ## HTTP
+ 
+        listen 443 ssl;  ## HTTPS
+ 
+        server_name  example_platform;
+ 
+        ssl_certificate     /etc/nginx/ssl/cert.pem;    ##location of the certificate
+        ssl_certificate_key /etc/nginx/ssl/privkey.pem; ##location of the private key
+     
+        location /rap/ {
+ 
+          proxy_set_header        Host $host;
+          proxy_set_header        X-Real-IP $remote_addr;
+          proxy_set_header        X-Forwarded-For $proxy_add_x_forwarded_for;
+          proxy_set_header X-Forwarded-Proto $scheme;
+          #proxy_pass_header       Server;
+           
+          proxy_pass http://localhost:8100; ## NOTE: This should match the RAP port in the CloudConfigProperties
+        }
+ 
+        location /paam/check_home_token_revocation  {
+ 
+          proxy_set_header        Host $host;
+          proxy_set_header        X-Real-IP $remote_addr;
+          proxy_set_header        X-Forwarded-For $proxy_add_x_forwarded_for;
+          proxy_set_header X-Forwarded-Proto $scheme;
+          #proxy_pass_header       Server;
+ 
+          proxy_pass https://localhost:8300/check_home_token_revocation; ## NOTE: This should match the Platform Authentication & Authentication Manager port in the CloudConfigProperties
+        }
+
+        location /paam/get_ca_cert  {
+ 
+          proxy_set_header        Host $host;
+          proxy_set_header        X-Real-IP $remote_addr;
+          proxy_set_header        X-Forwarded-For $proxy_add_x_forwarded_for;
+          proxy_set_header X-Forwarded-Proto $scheme;
+          #proxy_pass_header       Server;
+ 
+          proxy_pass https://localhost:8300/get_ca_cert; ## NOTE: This should match the Platform Authentication & Authentication Manager port in the CloudConfigProperties
+        }
+
+        location /paam/login  {
+ 
+          proxy_set_header        Host $host;
+          proxy_set_header        X-Real-IP $remote_addr;
+          proxy_set_header        X-Forwarded-For $proxy_add_x_forwarded_for;
+          proxy_set_header X-Forwarded-Proto $scheme;
+          #proxy_pass_header       Server;
+ 
+          proxy_pass https://localhost:8300/login; ## NOTE: This should match the Platform Authentication & Authentication Manager port in the CloudConfigProperties
+        }
+
+        location /paam/request_foreign_token  {
+ 
+          proxy_set_header        Host $host;
+          proxy_set_header        X-Real-IP $remote_addr;
+          proxy_set_header        X-Forwarded-For $proxy_add_x_forwarded_for;
+          proxy_set_header X-Forwarded-Proto $scheme;
+          #proxy_pass_header       Server;
+ 
+          proxy_pass https://localhost:8300/request_foreign_token; ## NOTE: This should match the Platform Authentication & Authentication Manager port in the CloudConfigProperties
+        }
+
+ 
+        location /rh/ {
+ 
+          proxy_set_header        Host $host;
+          proxy_set_header        X-Real-IP $remote_addr;
+          proxy_set_header        X-Forwarded-For $proxy_add_x_forwarded_for;
+          proxy_set_header X-Forwarded-Proto $scheme;
+          #proxy_pass_header       Server;
+ 
+          proxy_pass http://localhost:8001/; ## NOTE: This should match the Registration Handler port in the CloudConfigProperties
+        }
+ 
+        # Forwarding to cloudCoreInterface from the platform components
+        location /cloudCoreInterface/v1/ {
+ 
+          proxy_set_header        Host $host;
+          proxy_set_header        X-Real-IP $remote_addr;
+          proxy_set_header        X-Forwarded-For $proxy_add_x_forwarded_for;
+          proxy_set_header X-Forwarded-Proto $scheme;
+          #proxy_pass_header       Server;
+ 
+          proxy_pass http://146.124.2.73:8101/cloudCoreInterface/v1/; ## NOTE: The IP and the port should be changed to that of the CloudCoreInterface
+        }
+ 
+        # Forwarding to coreInterface from the platform components
+        location /coreInterface/v1/ {
+ 
+          proxy_set_header        Host $host;
+          proxy_set_header        X-Real-IP $remote_addr;
+          proxy_set_header        X-Forwarded-For $proxy_add_x_forwarded_for;
+          proxy_set_header X-Forwarded-Proto $scheme;
+          #proxy_pass_header       Server;
+ 
+          proxy_pass http://146.124.2.73:8100/coreInterface/v1/; ## NOTE: The IP and the port should be changed to that of the CoreInterface
+        }
+    }
+}
+```
+    * By using the configuration above, your Nginx will listen on port 8102 (http) and 443 (https). To enable https (ssl) you need to provide certificate for your machine, which is also required in later steps (more precisely, in step 2.4, set-up of PAAM), so the same certificate can be re-used. When you obtain the certificate (using the certbot tool, step 2.4-->3.1) copy them to the location: `/etc/nginx/ssl/` (you will need to create the ssl folder). Location can be different, but the nginx process needs access to it.
+
+  Besides that platform owner will need to provide a Java implementation of the platform-specific access to the resources and their readings (observations). So, some IDE for write code and Gradle for building and running of the components is required (use version 3, version 2.x can not build Registration Handler properly) . 
+
+#### 2. Download symbIoTe platform components.
+
+Platform components are available in the github, bundled in the [SymbioteCloud](https://github.com/symbiote-h2020/SymbioteCloud) repository. Master branches contain the latest stable symbIoTe release version, develop branch is a general development branch containing the newest features that are added during development and particular feature branches are where new features are developed. For symbIoTe cloud installation, the following components are currently being used and required to properly start platform in L1 compliance:
+
+* CloudConfigService - service that distributes configuration among platform components
+* EurekaService - allows discovery of platform components
+* ZipkinService - collects logs from various services
+* RegistrationHandler (abbr. RH) - service responsible for properly registering platform's resources and distributing this information among platform components
+* ResourceAccessProxy (abbr. RAP) - service responsible for providing access to the real readings of the platform's resources
+* AuthenticationAuthorizationManager (abbr. PAAM) - service responsible for providing a common authentication and authorization mechanism for symbIoTe
+* Monitoring  - service responsible for monitoring the status of the resources exposed by the platform and notifying symbIoTe core
+ * CloudConfigProperties - contains a list of properties to configure platform components. It can be found in [CloudConfigProperties](https://github.com/symbiote-h2020/CloudConfigProperties). It must be either deployed in `$HOME/git/symbiote/CloudConfigProperties` or the property `spring.cloud.config.server.git.uri` must be properly set in `src/main/resources/bootstrap.properties` of CloudConfigService component.
+
+For the example integration process described below we assume the following addresses of various Core and Cloud components:
+
+* Admin GUI                                        http://core.symbiote.eu:8250
+* Cloud Core Interface                             http://core.symbiote.eu:8101/cloudCoreInterface/v1/
+* Core Interface                                   http://core.symbiote.eu:8100/coreInterface/v1/
+* Registration Handler                             http://myplatform.eu:8102/rh
+* CloudAuthenticationAuthorizationManager          http://myplatform.eu:8102/paam
+* Resource Access Proxy                            http://myplatform.eu:8102/rap
+
+## 2. Integration with symbIoTe
+#### 1. Provide platform-specific access to the resource and data
+
+Resource Access Proxy is the component in charge of accessing to the resources. This requires the implementation of a software layer (the RAP platform plugin) in order to allow symbIoTe to be able to communicate with the internal mechanisms of the platform. The plugin will communicate with the generic part of the RAP through the rabbitMQ protocol, in order to decouple the symbIoTe Java implementation from the platform specific language.
+
+This figure shows the architecture of the RAP component (orange parts on the bottom are part of the platform specific plugin, to be implemented from platform owners):
+# ADD Figure
+
+Here's a quick list of actions and features that RAP platform specific plugin has to implement:
+
+* Registers to generic RAP specifying support for filters, notifications
+* Get read / write requests from RAP generic (w/ or w/o filters)
+* Applies filters to ‘get history’ requests (optional)
+* Get subscribe requests from generic RAP (if it supports notifications)
+* Forwards notifications coming from platform to generic RAP
+
+At the beginning, the platform plugin application has to register to the generic RAP, sending a message to exchange `symbIoTe.rapPluginExchange` with key `symbIoTe.rapPluginExchange.add-plugin`, with some information included: 
+* the platform ID (a custom string)
+* a boolean flag specifying if it supports notifications
+* a boolean flag specifying if it supports filters. 
+This is the message format expected during plugin registration:
+```
+{
+  type: REGISTER_PLUGIN,
+  platformId: string,
+  hasNotifications: boolean ,
+  hasFilters: boolean
+}
+```
+e.g.:
+```
+{
+  "type": "REGISTER_PLUGIN",
+  "platformId": "platform",  
+  "hasFilters": true, 
+  "hasNotifications": true
+}
+```
+Depending on if the platform can natively support filters/notifications, different configuration steps are required:
+
+1. Filters:
+  * If platform supports filters, RAP plugin just forwards filters to platform supporting filters
+  * (Optionally) a platform owner can decide to implement filters in RAP platform specific plugin
+  * If platform doesn’t support filters the historical readings are retrieved without any filter
+2. Notifications:
+  *  Enable/disable flag in CloudConfigProperties -> rap.northbound.interface.WebSocket=true/false
+
+#### 2. Register user and configure platform
 
   The next step is to create a user in the symbIoTe Core Admin webpage. After creating the user and registering, the user needs to specify the description of their platform.
 
