@@ -333,6 +333,7 @@ https://<yourPaamHostname>:<selected port>/app_registration
 ```
 
 #### 2.5  Setting up your Monitoring
+The installation of the monitoring component is detailed [here](https://github.com/symbiote-h2020/SymbioteCloud/raw/master/resources/docs/SymbIoTe_Monitoring_guide.pdf)
 
 #### 2.6 Starting symbIoTe Cloud components
 Starting symbIoTe Cloud components can be done in following steps:
