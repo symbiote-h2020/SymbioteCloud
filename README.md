@@ -41,8 +41,9 @@ For the example integration process described below we assume the following addr
 Resource Access Proxy is the component in charge of accessing to the resources. This requires the implementation of a software layer (the RAP platform plugin) in order to allow symbIoTe to be able to communicate with the internal mechanisms of the platform. The plugin will communicate with the generic part of the RAP through the rabbitMQ protocol, in order to decouple the symbIoTe Java implementation from the platform specific language.
 
 This figure shows the architecture of the RAP component (orange parts on the bottom are part of the platform specific plugin, to be implemented from platform owners):
-# ADD Figure
+
 ![RAP Architecture](https://github.com/symbiote-h2020/SymbioteCloud/blob/master/resources/figures/RAP-arch_v02.png?raw=true)
+
 Here's a quick list of actions and features that RAP platform specific plugin has to implement:
 
   * Registers to generic RAP specifying support for filters, notifications
@@ -183,18 +184,22 @@ The next step is to create a platform owner user in the symbIoTe Core Admin webp
   * Name - name of the platform
   * Address - url of the platform's Interworking Interface which will provide entry point to sybmIoTe Cloud components.
   * Id - a preferred id for the platform. It is optional, if not provided symbiote will generate one for you
-# ADD Figure
+
+![Administration Registration](https://github.com/symbiote-h2020/SymbioteCloud/blob/master/resources/figures/Administration_registration.png?raw=true)
 
 After registering the user, you will be given your user's certificate and key. You will need to store these somewhere, since you can not re-display them, only issue new ones. This limitation is only for release 0.2.0.
-# ADD Figure
+
+![Administration Certificate](https://github.com/symbiote-h2020/SymbioteCloud/blob/master/resources/figures/Administration_certificate.png?raw=true)
 
 Afterwards, you can log in as the new user and activate your platform, by supplying other secondary platform details:
   * Description - description of the platform
   * Information Model - used to differentiate between types of information models - to be used in the future when we provide support for platform specific information models.
-# ADD Figure
+
+![Administration Activate](https://github.com/symbiote-h2020/SymbioteCloud/blob/master/resources/figures/Administration_activate.png?raw=true)
 
 Finally, your platform should be active, and all necessary details (like platform id can be seen or modified)
-# ADD Figure
+
+![Administration Ready](https://github.com/symbiote-h2020/SymbioteCloud/blob/master/resources/figures/Administration_ready.png?raw=true)
 
 #### 3. Configuration of the symbIoTe Cloud components
 Before starting symbIoTe Cloud components we need to provide proper configuration in the CloudConfigProperties component. Please edit `application.properties` file contained in this component and provide the following information:
