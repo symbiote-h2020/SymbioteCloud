@@ -9,9 +9,7 @@ Platform components require the following tools to be installed:
   * [MongoDB](https://www.mongodb.com/) - database used by Registration Handler and Interworking Interface
   * [Icinga 2](https://www.icinga.com/products/icinga-2/) - for monitoring the registered resources
   * [Nginx](https://www.nginx.com/resources/admin-guide/installing-nginx-open-source/) - replaced Interworking Interface component of Release 0.1.0
-    * Nginx needs to be configured so that it redirects correctly to the various components.  (more instructions [here](http://nginx.org/en/docs/beginners_guide.html))
-This can be done by the placing following nginx.conf in `/usr/local/nginx/conf`, `/etc/nginx`, or `/usr/local/etc/nginx`.
-(If there are issues, it may be better to simply copy the `server {...}` part in the default config file in `/etc/nginx/nginx.conf` (in Ubuntu/Debian)
+    * Nginx needs to be configured so that it redirects correctly to the various components.  (more instructions [here](http://nginx.org/en/docs/beginners_guide.html)). This can be done by the placing following [nginx.conf](https://github.com/symbiote-h2020/SymbioteCloud/blob/master/resources/conf/nginx.conf) in `/usr/local/nginx/conf`, `/etc/nginx`, or `/usr/local/etc/nginx`. (If there are issues, it may be better to simply copy the `server {...}` part in the default config file in `/etc/nginx/nginx.conf` (in Ubuntu/Debian)
  
     * By using the configuration above, your Nginx will listen on port 8102 (http) and 443 (https). To enable https (ssl) you need to provide certificate for your machine, which is also required in later steps (more precisely, in step 2.4, set-up of PAAM), so the same certificate can be re-used. When you obtain the certificate (using the certbot tool, step 2.4-->3.1) copy them to the location: `/etc/nginx/ssl/` (you will need to create the ssl folder). Location can be different, but the nginx process needs access to it.
 
@@ -31,12 +29,12 @@ Platform components are available in the github, bundled in the [SymbioteCloud](
 
 For the example integration process described below we assume the following addresses of various Core and Cloud components:
 
-  * *Admin GUI*                                        http://core.symbiote.eu:8250
-  * *Cloud Core Interface*                             http://core.symbiote.eu:8101/cloudCoreInterface/v1/
-  * *Core Interface*                                   http://core.symbiote.eu:8100/coreInterface/v1/
-  * *Registration Handler*                             http://myplatform.eu:8102/rh
-  * *CloudAuthenticationAuthorizationManager*          http://myplatform.eu:8102/paam
-  * *Resource Access Proxy*                            http://myplatform.eu:8102/rap
+  * *Admin GUI*                                        https://core.symbiote.eu:8250
+  * *Cloud Core Interface*                             https://core.symbiote.eu:8101/cloudCoreInterface/v1/
+  * *Core Interface*                                   https://core.symbiote.eu:8100/coreInterface/v1/
+  * *Registration Handler*                             https://myplatform.eu:8102/rh
+  * *CloudAuthenticationAuthorizationManager*          https://myplatform.eu:8102/paam
+  * *Resource Access Proxy*                            https://myplatform.eu:8102/rap
 
 ## 2. Integration with symbIoTe
 #### 1. Provide platform-specific access to the resource and data
@@ -44,7 +42,7 @@ Resource Access Proxy is the component in charge of accessing to the resources. 
 
 This figure shows the architecture of the RAP component (orange parts on the bottom are part of the platform specific plugin, to be implemented from platform owners):
 # ADD Figure
-
+![RAP Architecture](https://github.com/symbiote-h2020/SymbioteCloud/blob/master/resources/figures/RAP-arch_v02.png?raw=true)
 Here's a quick list of actions and features that RAP platform specific plugin has to implement:
 
   * Registers to generic RAP specifying support for filters, notifications
@@ -206,9 +204,9 @@ rabbit.username=<TODO set properly (e.g. guest for localhost)>
 rabbit.password=<TODO set properly (e.g. guest for localhost)>
 security.user=<TODO set properly (username used during registration)>
 security.password=<TODO set properly (password used during registration)>
-symbiote.coreaam.url=<TODO set properly (format: http://{nginxIp}:{nginxPort}/coreInterface/v1 e.g. http://localhost:8102/coreInterface/v1)>
+symbiote.coreaam.url=<TODO set properly (format: https://{nginxIp}:{nginxPort}/coreInterface/v1 e.g. https://localhost:8102/coreInterface/v1)>
 platform.id=<TODO set properly>
-symbIoTe.interworkinginterface.url=<TODO set properly (format: http://{nginxIp}:{nginxPort}/cloudCoreInterface/v1 e.g. http://localhost:8102/cloudCoreInterface/v1)>
+symbIoTe.interworkinginterface.url=<TODO set properly (format: https://{nginxIp}:{nginxPort}/cloudCoreInterface/v1 e.g. https://localhost:8102/cloudCoreInterface/v1)>
 ```
 #### 4.  Setting up the Platform Authentication and Authorization Manager
 
@@ -229,7 +227,7 @@ java -jar build/libs/{Component}
 ```
 
 #### 6. Register resource
-After our platform has been registered and symbIoTe Cloud components for our platform are configured and are running, we can proceed to expose some of our platform's resources to symbIoTe Core. List of properties that are supported in the description in R2 can be found here: List of properties supported in R2 (BIM + imported models). This is done by sending *HTTP POST* request containing resource description on *RegistrationHandler*'s registration endpoint (i.e. http://myplatform.eu:8102/rh/resources). Exemplary description is shown below:
+After our platform has been registered and symbIoTe Cloud components for our platform are configured and are running, we can proceed to expose some of our platform's resources to symbIoTe Core. List of properties that are supported in the description in R2 can be found here: List of properties supported in R2 (BIM + imported models). This is done by sending *HTTP POST* request containing resource description on *RegistrationHandler*'s registration endpoint (i.e. https://myplatform.eu:8102/rh/resources). Exemplary description is shown below:
   ```
   [
   {
@@ -243,7 +241,7 @@ After our platform has been registered and symbIoTe Cloud components for our pla
       "comments": [
         "A comment"
       ],
-      "interworkingServiceURL": "http://symbiote-h2020.eu/example/interworkingService/",
+      "interworkingServiceURL": "https://symbiote-h2020.eu/example/interworkingService/",
 	  "locatedAt": {
         "@c": ".WGS84Location",
         "longitude": 2.349014,
@@ -284,7 +282,7 @@ After our platform has been registered and symbIoTe Cloud components for our pla
 	    "comments": [
 	    	"This is actuator 1"
 	    ],
- 	    "interworkingServiceURL": "http://symbiote-h2020.eu/example/interworkingService/",
+ 	    "interworkingServiceURL": "https://symbiote-h2020.eu/example/interworkingService/",
   		"locatedAt": {
 		    "@c": ".WGS84Location",
 		    "longitude": 2.349014,
@@ -303,7 +301,7 @@ After our platform has been registered and symbIoTe Cloud components for our pla
 		    "comments": [
         		"This is actuating service 1"
 	        ],
-		    "interworkingServiceURL": "http://symbiote-h2020.eu/example/interworkingService/",
+		    "interworkingServiceURL": "https://symbiote-h2020.eu/example/interworkingService/",
 	        "name": "actuatingService1Name",
 	        "outputParameter": {
 				"array": false,
@@ -353,7 +351,7 @@ After our platform has been registered and symbIoTe Cloud components for our pla
 The *interworkingServiceURL* of each resource should be the same with the *interworkingServiceURL* specified during platform registration. RH uses II (i.e. nginx) to communicate with symbIoTe Core to register our platform's resource. If the registration process is successful Core returns resource containing field id (i.e. symbIoTeId) with unique, generated id of the resource in the symbIoTe Core layer. Information about the registered resource is distributed in Cloud components using RabbitMQ messaging.
 
 #### 2.7 Update resources
-After registering resources, it is also possible to update them. This is done by sending *HTTP PUT* request containing resource description on *RegistrationHandler*'s update endpoint (i.e. http://myplatform.eu:8102/rh/resources). Exemplary description is shown below:
+After registering resources, it is also possible to update them. This is done by sending *HTTP PUT* request containing resource description on *RegistrationHandler*'s update endpoint (i.e. https://myplatform.eu:8102/rh/resources). Exemplary description is shown below:
 ```
 [
   {
@@ -368,7 +366,7 @@ After registering resources, it is also possible to update them. This is done by
       "comments": [
         "Another comment"
       ],
-      "interworkingServiceURL": "http://symbiote-h2020.eu/example/interworkingService/",
+      "interworkingServiceURL": "https://symbiote-h2020.eu/example/interworkingService/",
 	  "locatedAt": {
         "@c": ".WGS84Location",
         "longitude": 2.349014,
@@ -409,7 +407,7 @@ After registering resources, it is also possible to update them. This is done by
 	    "comments": [
 	    	"This is modified actuator 1"
 	    ],
- 	    "interworkingServiceURL": "http://symbiote-h2020.eu/example/interworkingService/",
+ 	    "interworkingServiceURL": "https://symbiote-h2020.eu/example/interworkingService/",
   		"locatedAt": {
 		    "@c": ".WGS84Location",
 		    "longitude": 2.349014,
@@ -428,7 +426,7 @@ After registering resources, it is also possible to update them. This is done by
 		    "comments": [
         		"This is actuating service 1"
 	        ],
-		    "interworkingServiceURL": "http://symbiote-h2020.eu/example/interworkingService/",
+		    "interworkingServiceURL": "https://symbiote-h2020.eu/example/interworkingService/",
 	        "name": "actuatingService1Name",
 	        "outputParameter": {
 				"array": false,
@@ -479,14 +477,14 @@ After registering resources, it is also possible to update them. This is done by
 The *interworkingServiceURL* of each resource should be the same with the *interworkingServiceURL* specified during platform registration. RH uses II (i.e. nginx) to communicate with symbIoTe Core to update our platform's resource. The *id* of each resource should be the same *id* returned during registration.
 
 #### 2.8 Delete resources
-After registering resources, it is also possible to delete them. This is done by sending *HTTP DELETE* request containing the internal ids on *ResourceHandler*'s delete endpoint (e.g. http://myplatform.eu:8102/rh/resources?resourceInternalId=1600,1700).
+After registering resources, it is also possible to delete them. This is done by sending *HTTP DELETE* request containing the internal ids on *ResourceHandler*'s delete endpoint (e.g. https://myplatform.eu:8102/rh/resources?resourceInternalId=1600,1700).
 
 
 ## 3 Test integrated resource
 After our resource have been shared with Core we can test if we can find and access it properly.
 
 #### 3.1 Search for resource
-To search for resource we need to create a query to the symbIoTe Core. In our example, we use http://core.symbiote.eu:8100/coreInterface/v1/query endpoint and provide parameters for querying. Requests need *X-Auth-Token* header to be specified with current token of the user (currently tokens are not validated). All possible query parameters can be seen below:
+To search for resource we need to create a query to the symbIoTe Core. In our example, we use https://core.symbiote.eu:8100/coreInterface/v1/query endpoint and provide parameters for querying. Requests need *X-Auth-Token* header to be specified with current token of the user (currently tokens are not validated). All possible query parameters can be seen below:
 ```
 Query parameters {
          platform_id:           String
@@ -516,7 +514,7 @@ Text parameters allow substring searches using '\*' character which can be place
 * location_name
 * observed_property
 
-For our example lets search for resources with name *Sensor1*. We do it by sending *HTTP GET* request on symbIoTe Core Interface (e.g. http://core.symbiote.eu:8100/coreInterface/v1/query?name=Stationary 1). The response contains a list of resources fulfilling the criteria:
+For our example lets search for resources with name *Sensor1*. We do it by sending *HTTP GET* request on symbIoTe Core Interface (e.g. https://core.symbiote.eu:8100/coreInterface/v1/query?name=Stationary 1). The response contains a list of resources fulfilling the criteria:
 ```
 {
   "resources": [
@@ -536,14 +534,14 @@ For our example lets search for resources with name *Sensor1*. We do it by sendi
         "humidity"
       ],
       "resourceType": [
-        "http://www.symbiote-h2020.eu/ontology/core#StationarySensor"
+        "https://www.symbiote-h2020.eu/ontology/core#StationarySensor"
       ]
     }
   ]
 }
 ```
 ##### 3.1.2 SPARQL query endpoint
-In release 0.2.0, an additional endpoint was created to allow sending *SPARQL* queries to symbIoTe Core. To send *SPARQL* requests we need to send request by using *HTTP POST* with *X-Auth-Token"*header (see above) to the url: http://core.symbiote.eu:8100/coreInterface/v1/sparqlQuery. The endpoint accepts the following payload:
+In release 0.2.0, an additional endpoint was created to allow sending *SPARQL* queries to symbIoTe Core. To send *SPARQL* requests we need to send request by using *HTTP POST* with *X-Auth-Token"*header (see above) to the url: https://core.symbiote.eu:8100/coreInterface/v1/sparqlQuery. The endpoint accepts the following payload:
 ```
 { 
     "sparqlQuery" : "<sparql>",
@@ -587,10 +585,10 @@ returns the following output:
 ```
 
 #### 3.2 Obtaining resource access URL
-To access the resource we need to ask symbIoTe Core for the access url. To do so, we need to send a *HTTP GET* request on http://core.symbiote.eu:8100/coreInterface/v1/resourceUrls?id=589dc62a9bdddb2d2a7ggab8. To access the endpoint, we need to specify *X-Auth-Token* header with a valid platform token of the user that is trying to access the resources. 
+To access the resource we need to ask symbIoTe Core for the access url. To do so, we need to send a *HTTP GET* request on https://core.symbiote.eu:8100/coreInterface/v1/resourceUrls?id=589dc62a9bdddb2d2a7ggab8. To access the endpoint, we need to specify *X-Auth-Token* header with a valid platform token of the user that is trying to access the resources. 
 
 ##### 3.3.1 Request a platform token directly
-In this case, you can request a platform token from the PAAM of the platform which owns the resources you are interested in. For that, you have to issue a *HTTP POST* request to "http://myplatform.eu:8102/paam/login" containing the following:
+In this case, you can request a platform token from the PAAM of the platform which owns the resources you are interested in. For that, you have to issue a *HTTP POST* request to "https://myplatform.eu:8102/paam/login" containing the following:
 ```
 {
   "username" : "The username name used when registering to the PLATFORM",
@@ -600,7 +598,7 @@ In this case, you can request a platform token from the PAAM of the platform whi
 The token will be contained in the *X-Auth-Token* header field of the response.
 
 ##### NOTE:
-If you do not know the PAAM url, then you can issue a *HTTP GET* request to http:/core.symbiote.eu:8100/coreInterface/v1/get_available_aams and distinguishing the desired PAAM by the *platform id*. 
+If you do not know the PAAM url, then you can issue a *HTTP GET* request to https://core.symbiote.eu:8100/coreInterface/v1/get_available_aams and distinguishing the desired PAAM by the *platform id*. 
 
 ##### 3.3.2 Request a platform token by providing a core token
 In this case, first you have to get a core token. For that, you have to issue a "HTTP POST" request to http:/core.symbiote.eu:8100/coreInterface/v1/login containing the following:
@@ -610,14 +608,14 @@ In this case, first you have to get a core token. For that, you have to issue a 
   "password" : "The password name used when registering to the symbIoTe CORE"
 }
 ```
-Then, you have to get the url of the PAAM as described above and issue a *HTTP POST* request to http://myplatform.eu:8102/paam/login containing the core token in the *X-Auth-Token* header field. The platform token will be included in the *X-Auth-Token* header field of the response.
+Then, you have to get the url of the PAAM as described above and issue a *HTTP POST* request to https://myplatform.eu:8102/paam/login containing the core token in the *X-Auth-Token* header field. The platform token will be included in the *X-Auth-Token* header field of the response.
 
 ##### 3.3.3 Get the resource urls
 If we provide correct ids of the resources along with a valid platform token, we will get a response containing URLs to access the resources:
 ```
 {  
-	"589dc62a9bdddb2d2a7ggab8": "http://myplatform.eu:8102/rap/Sensor('589dc62a9bdddb2d2a7ggab8')",
-	"589dc62a9bdddb2d2a7ggab9": "http://myplatform.eu:8102/rap/Sensor('589dc62a9bdddb2d2a7ggab9')"
+	"589dc62a9bdddb2d2a7ggab8": "https://myplatform.eu:8102/rap/Sensor('589dc62a9bdddb2d2a7ggab8')",
+	"589dc62a9bdddb2d2a7ggab9": "https://myplatform.eu:8102/rap/Sensor('589dc62a9bdddb2d2a7ggab9')"
  }
  ```
  
@@ -635,8 +633,8 @@ The applications can:
 * Write value into resource
 
 3.3.1 OData access
-* GET  http://myplatform.eu:8102/rap/Sensor('symbioteId')/Observations? $top=1
-* GET http://myplatform.eu:8102/rap/Sensor('symbioteId')/Observations
+* GET  https://myplatform.eu:8102/rap/Sensor('symbioteId')/Observations? $top=1
+* GET https://myplatform.eu:8102/rap/Sensor('symbioteId')/Observations
   Historical readings can be filtered, using the option $filter.
   Operators supported: 
   * Equals
@@ -645,7 +643,7 @@ The applications can:
   * Greater Than
   * And
   * Or
-* PUT http://myplatform.eu:8102/rap/Actuator(‘actuatorId')/ActuatingService(‘serviceId')
+* PUT https://myplatform.eu:8102/rap/Actuator(‘actuatorId')/ActuatingService(‘serviceId')
 ```
 {
     "inputParameters":
@@ -664,9 +662,9 @@ The applications can:
 ```
 
 ##### 3.3.2 REST access
-* GET http://myplatform.eu:8102/rap/Sensor/{symbioteId}
-* GET http://myplatform.eu:8102/rap/Sensor/{symbioteId}/history
-* POST http://myplatform.eu:8102/rap/Service(‘symbioteId')
+* GET https://myplatform.eu:8102/rap/Sensor/{symbioteId}
+* GET https://myplatform.eu:8102/rap/Sensor/{symbioteId}/history
+* POST https://myplatform.eu:8102/rap/Service(‘symbioteId')
 ```
 {
     "inputParameters":
@@ -685,7 +683,7 @@ The applications can:
 ```
 
 ##### 3.3.3 Push feature 
-Applications can receive notifications from resources, through SymbIoTe RAP WebSocket. The client shall open a WebSocket connection towards a Server at ws://IP:PORT/notification, where IP and PORT are the Interworking Interface parameters.
+Applications can receive notifications from resources, through SymbIoTe RAP WebSocket. The client shall open a WebSocket connection towards a Server at ws://IP:PORT/rap/notification, where IP and PORT are the Interworking Interface parameters.
 
 To subscribe (or unsubscribe) to resources you have to send a message to the WebSocket specifying:
 ```
