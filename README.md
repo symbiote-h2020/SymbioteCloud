@@ -15,7 +15,7 @@ Platform components require the following tools to be installed:
 
   Besides that platform owner will need to provide a Java implementation of the platform-specific access to the resources and their readings (observations). So, some IDE for write code and Gradle for building and running of the components is required (use version 3, version 2.x can not build Registration Handler properly) . 
 
-#### 2. Download symbIoTe platform components.
+#### 1.2 Download symbIoTe platform components.
 Platform components are available in the github, bundled in the [SymbioteCloud](https://github.com/symbiote-h2020/SymbioteCloud) repository. Master branches contain the latest stable symbIoTe release version, develop branch is a general development branch containing the newest features that are added during development and particular feature branches are where new features are developed. For symbIoTe cloud installation, the following components are currently being used and required to properly start platform in L1 compliance:
 
   * *CloudConfigService* - service that distributes configuration among platform components
@@ -37,7 +37,7 @@ For the example integration process described below we assume the following addr
   * *Resource Access Proxy*                            https://myplatform.eu:8102/rap
 
 ## 2. Integration with symbIoTe
-#### 1. Provide platform-specific access to the resource and data
+#### 2.1 Provide platform-specific access to the resource and data
 Resource Access Proxy is the component in charge of accessing to the resources. This requires the implementation of a software layer (the RAP platform plugin) in order to allow symbIoTe to be able to communicate with the internal mechanisms of the platform. The plugin will communicate with the generic part of the RAP through the rabbitMQ protocol, in order to decouple the symbIoTe Java implementation from the platform specific language.
 
 This figure shows the architecture of the RAP component (orange parts on the bottom are part of the platform specific plugin, to be implemented from platform owners):
@@ -179,7 +179,7 @@ All returned messages from read accesses (GET, HISTORY and notifications) are mo
 ```
 
 
-#### 2. Register user and configure platform
+#### 2.2 Register user and configure platform
 The next step is to create a platform owner user in the symbIoTe Core Admin webpage. During registration, it is also necessary to specify some platform details that are needed for security purposes. These are:
   * Name - name of the platform
   * Address - url of the platform's Interworking Interface which will provide entry point to sybmIoTe Cloud components.
@@ -201,7 +201,7 @@ Finally, your platform should be active, and all necessary details (like platfor
 
 ![Administration Ready](https://github.com/symbiote-h2020/SymbioteCloud/blob/master/resources/figures/Administration_ready.png?raw=true)
 
-#### 3. Configuration of the symbIoTe Cloud components
+#### 2.3 Configuration of the symbIoTe Cloud components
 Before starting symbIoTe Cloud components we need to provide proper configuration in the CloudConfigProperties component. Please edit `application.properties` file contained in this component and provide the following information:
 ```
 rabbit.host=<TODO set properly>
@@ -213,9 +213,128 @@ symbiote.coreaam.url=<TODO set properly (format: https://{nginxIp}:{nginxPort}/c
 platform.id=<TODO set properly>
 symbIoTe.interworkinginterface.url=<TODO set properly (format: https://{nginxIp}:{nginxPort}/cloudCoreInterface/v1 e.g. https://localhost:8102/cloudCoreInterface/v1)>
 ```
-#### 4.  Setting up the Platform Authentication and Authorization Manager
+#### 2.4  Setting up the Platform Authentication and Authorization Manager
+##### 2.4.1 PAAM certificate
+Once a platform instance is registered through Administration module, the Platform owner should contact us providing the following data:
 
-#### 5. Starting symbIoTe Cloud components
+| Country Code  |     State     | Locality  | Organization | Organization Unit | Platform Identifier (CN in certificate)  | hostname |
+| ------------- |:-------------:|:---------:|:------------:|:-----------------:|:----------------------------------------:|:----------
+| *PL* | Wielkopolska | Poznan | PSNC | IoT Department| psnc-platform-1 | iot-1.symbiote.man.poznan.pl |
+
+For those data we will provide you with a keystore file containing the certificate required to set-up your platform AAM module.
+
+##### 2.4.2 SSL certificate
+To secure communication between the clients and your platform instance you need an SSL certificate(s) for your PAAM and for your InterworkingInterface. Should they be deployed on the same host, the certificate can be reused in both components.
+
+##### 2.4.2.1 How to issue the certificate
+Issue using e.g. https://letsencrypt.org/
+A certificate can be obtained using the certbot shell tool (https://certbot.eff.org/) only for resolvable domain name.
+Instructions for the Ubuntu (Debian) machine are the following: 
+1. Install certbot:
+```
+sudo apt-get install software-properties-common
+sudo add-apt-repository ppa:certbot/certbot
+sudo apt-get update
+sudo apt-get install certbot python-certbot-apache
+```
+2. Obtain the certificate by executing:
+```
+certbot --apache certonly
+```
+Apache port (80 by default) should be accessible from outside on your firewall. Select option Standalone (option 2) and enter your domain name.
+
+3. Upon successful execution navigate to the location `/etc/letsencrypt/live/<domain_name>/`, where you can find your certificate and private key (5 files in total, cert.pem  chain.pem  fullchain.pem  privkey.pem  README).
+
+##### 2.4.2.2 How to create a Java Keystore with the issued SSL certificate, required for Platform AAM deployment
+Create a Java Keystore containing the certificate. Use the [KeyStore Explorer](http://keystore-explorer.org/downloads.html) application to create JavaKeystore :
+
+1. (optionally) Inspect obtained files using Examine --> Examine File
+2. Create a new Keystore --> PKCS #12
+3. Tools --> Import Key Pair --> PKCS #8
+4. Deselect Encrypted Private Key
+   Browse and set your private key (privkey.pem)
+   Browse and set your certificate (fullchain.pem)
+5. Import --> enter alias for the certificate for this keystore
+6. Enter password
+7. File --> Save --> enter previously set password  --> \<filename\>.p12
+   Note: Filename will be used as configuration parameter of the Platform AAM component.
+    `server.ssl.key-store=classpath:<filename>.p12`
+
+If you do not want to use KeyStore Explorer find some helpful resources below:  
+* https://community.letsencrypt.org/t/how-to-get-certificates-into-java-keystore/25961/19  
+* http://stackoverflow.com/questions/34110426/does-java-support-lets-encrypt-certificates
+
+##### 2.4.3 Configuring the Platform AAM resources
+Once you have done the previous actions, you need to fix the file `src/main/resources/bootstrap.properties` manually for each deployment using the template below or comments from the file itself.
+```
+spring.cloud.config.enabled=true
+spring.application.name=AuthenticationAuthorizationManager
+logging.file=logs/AuthenticationAuthorizationManager.log
+# security agreed constants
+aam.security.KEY_PAIR_GEN_ALGORITHM=ECDSA
+aam.security.CURVE_NAME=secp256r1
+aam.security.SIGNATURE_ALGORITHM=SHA256withECDSA
+  
+# username and password of the AAM module (of your choice)
+aam.deployment.owner.username=TODO
+aam.deployment.owner.password=TODO
+# name of the PAAM JavaKeyStore file you need to put in your src/main/resources directory
+aam.security.KEY_STORE_FILE_NAME=TODO.p12
+# name of the certificate entry in the Keystore you were given
+aam.security.KEY_STORE_ALIAS=TODO
+# symbiote keystore password
+aam.security.KEY_STORE_PASSWORD=TODO
+# symbiote certificate private key password
+aam.security.PV_KEY_PASSWORD=TODO
+#JWT validity time in milliseconds - how long the tokens issued to your users (apps) are valid... think maybe of an hour, day, week?
+aam.deployment.token.validityMillis=TODO
+# HTTPS only
+# name of the keystore containing the letsencrypt (or other) certificate and key pair for your AAM host's SSL, you need to put it also in your src/main/resources directory
+server.ssl.key-store=classpath:TODO.p12
+# SSL keystore password
+server.ssl.key-store-password=TODO
+# SSL certificate private key password
+server.ssl.key-password=TODO
+# http to https redirect
+security.require-ssl=true
+```
+You also need to copy to the `src/main/resources/` directory:
+1. JavaKeyStore file containing the Platform AAM cert+key that you receive from us (e.g. via e-mail)
+2. the keystore generated for your SSL cerfitiface
+
+Build the AAM module using command:
+```
+gradle assemble
+```
+and then run the Platform AAM jar as any other Symbiote component.
+
+##### 2.4.4 Veryfing that Platform AAM is working
+Verify all is ok by going to:
+```
+https://<yourPaamHostname>:<selected port>/get_ca_cert  
+```
+The content there is your Platform AAM instance's certificate in PEM format.
+
+##### 2.4.5 Veryfing that InterworkingInterface is working
+Verify all is ok by going to:
+```
+https://<yourNginxHostname>/paam/get_ca_cert  
+```
+The content there is again your Platform AAM instance's certificate in PEM format.
+
+##### 2.4.6 Platform AAM managment
+To access a 'simple' management panel of your AAM go to:  
+```
+https://<yourPaamHostname>:<selected port>/aam_owner_login  
+```
+To register a local application/user go to:  
+```
+https://<yourPaamHostname>:<selected port>/app_registration  
+```
+
+#### 2.5  Setting up your Monitoring
+
+#### 2.6 Starting symbIoTe Cloud components
 Starting symbIoTe Cloud components can be done in following steps:
 
   * Start RabbitMQ server
@@ -231,7 +350,7 @@ gradle assemble
 java -jar build/libs/{Component}
 ```
 
-#### 6. Register resource
+#### 2.7 Register resource
 After our platform has been registered and symbIoTe Cloud components for our platform are configured and are running, we can proceed to expose some of our platform's resources to symbIoTe Core. List of properties that are supported in the description in R2 can be found here: List of properties supported in R2 (BIM + imported models). This is done by sending *HTTP POST* request containing resource description on *RegistrationHandler*'s registration endpoint (i.e. https://myplatform.eu:8102/rh/resources). Exemplary description is shown below:
   ```
   [
@@ -355,7 +474,7 @@ After our platform has been registered and symbIoTe Cloud components for our pla
 ##### NOTE:
 The *interworkingServiceURL* of each resource should be the same with the *interworkingServiceURL* specified during platform registration. RH uses II (i.e. nginx) to communicate with symbIoTe Core to register our platform's resource. If the registration process is successful Core returns resource containing field id (i.e. symbIoTeId) with unique, generated id of the resource in the symbIoTe Core layer. Information about the registered resource is distributed in Cloud components using RabbitMQ messaging.
 
-#### 2.7 Update resources
+#### 2.8 Update resources
 After registering resources, it is also possible to update them. This is done by sending *HTTP PUT* request containing resource description on *RegistrationHandler*'s update endpoint (i.e. https://myplatform.eu:8102/rh/resources). Exemplary description is shown below:
 ```
 [
@@ -481,7 +600,7 @@ After registering resources, it is also possible to update them. This is done by
 ##### NOTE:
 The *interworkingServiceURL* of each resource should be the same with the *interworkingServiceURL* specified during platform registration. RH uses II (i.e. nginx) to communicate with symbIoTe Core to update our platform's resource. The *id* of each resource should be the same *id* returned during registration.
 
-#### 2.8 Delete resources
+#### 2.9 Delete resources
 After registering resources, it is also possible to delete them. This is done by sending *HTTP DELETE* request containing the internal ids on *ResourceHandler*'s delete endpoint (e.g. https://myplatform.eu:8102/rh/resources?resourceInternalId=1600,1700).
 
 
