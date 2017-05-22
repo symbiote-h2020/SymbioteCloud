@@ -1,34 +1,34 @@
 # SymbioteCloud
 
-As a result of the following steps you will setup and run symbIoTe Cloud components for your platform. You will also register your platform and resources in symbIoTe Core offered by symbIoTe project, which collects the metadata for all symbIoTe-enabled platforms. This will allow other symbIoTe users to use the Core to search and access resources that have been shared by you.
+As a result of the following steps, you will setup and run symbIoTe Cloud components for your platform. You will also register your platform and resources in symbIoTe Core offered by symbIoTe project, which collects metadata for all symbIoTe-enabled platforms. This will allow other symbIoTe users to use the Core to search and access resources that have been shared by you.
 
-## 1. Preparation steps.
+## 1. Preparation steps
 #### 1.1 Installation of required tools for symbIoTe platform components
 Platform components require the following tools to be installed:
   * [Java Runtime Environment](https://java.com/download) - You need Oracle Java 8 version 101+ [(Letsencrypt certificate compatibility)](https://letsencrypt.org/docs/certificate-compatibility/)
   * [RabbitMQ](https://www.rabbitmq.com/) - message queue server for internal messaging between platform components
-  * [MongoDB](https://www.mongodb.com/) - database used by Registration Handler and Interworking Interface
+  * [MongoDB](https://www.mongodb.com/) - database used by Platform components
   * [Icinga 2](https://www.icinga.com/products/icinga-2/) - for monitoring the registered resources
   * [Nginx](https://www.nginx.com/resources/admin-guide/installing-nginx-open-source/) - replaced Interworking Interface component of Release 0.1.0
-    * Nginx needs to be configured so that it redirects correctly to the various components.  (more instructions [here](http://nginx.org/en/docs/beginners_guide.html)). This can be done by the placing following [nginx.conf](https://github.com/symbiote-h2020/SymbioteCloud/blob/master/resources/conf/nginx.conf) in `/usr/local/nginx/conf`, `/etc/nginx`, or `/usr/local/etc/nginx`. (If there are issues, it may be better to simply copy the `server {...}` part in the default config file in `/etc/nginx/nginx.conf` (in Ubuntu/Debian)
+    * Nginx needs to be configured so that it redirects correctly to the various components.  (more instructions [here](http://nginx.org/en/docs/beginners_guide.html)). This can be done by the placing the following [nginx.conf](https://github.com/symbiote-h2020/SymbioteCloud/blob/master/resources/conf/nginx.conf) in `/usr/local/nginx/conf`, `/etc/nginx`, or `/usr/local/etc/nginx`. (If there are issues, it may be better to simply copy the `server {...}` part in the default config file in `/etc/nginx/nginx.conf` (in Ubuntu/Debian)
  
     * By using the configuration above, your Nginx will listen on port 8102 (http) and 443 (https). To enable https (ssl) you need to provide certificate for your machine, which is also required in later steps (more precisely, in step 2.4, set-up of PAAM), so the same certificate can be re-used. When you obtain the certificate (using the certbot tool, step 2.4-->3.1) copy them to the location: `/etc/nginx/ssl/` (you will need to create the ssl folder). Location can be different, but the nginx process needs access to it.
 
-  Besides that platform owner will need to provide a Java implementation of the platform-specific access to the resources and their readings (observations). So, some IDE for write code and Gradle for building and running of the components is required (use version 3, version 2.x can not build Registration Handler properly) . 
+  Besides that platform owner will need to provide a Java implementation of the platform-specific access to the resources and their readings (observations). So, some *IDE* for writing code and *Gradle* for building and running of the components is required (use version 3, version 2.x can not build Registration Handler properly) . 
 
-#### 1.2 Download symbIoTe platform components.
-Platform components are available in the github, bundled in the [SymbioteCloud](https://github.com/symbiote-h2020/SymbioteCloud) repository. Master branches contain the latest stable symbIoTe release version, develop branch is a general development branch containing the newest features that are added during development and particular feature branches are where new features are developed. For symbIoTe cloud installation, the following components are currently being used and required to properly start platform in L1 compliance:
+#### 1.2 Download symbIoTe platform components
+Platform components are available in the GitHub, bundled in the [SymbioteCloud](https://github.com/symbiote-h2020/SymbioteCloud) repository. Master branches contain the latest stable symbIoTe release version, develop branch is a general development branch containing the newest features that are added during development and particular feature branches are where new features are developed. For symbIoTe cloud installation, the following components are currently being used and required to properly start platform in L1 compliance:
 
   * *CloudConfigService* - service that distributes configuration among platform components
   * *EurekaService* - allows discovery of platform components
   * *ZipkinService* - collects logs from various services
-  * *RegistrationHandler* (abbr. RH) - service responsible for properly registering platform's resources and distributing this information among platform components
-  * *ResourceAccessProxy* (abbr. RAP) - service responsible for providing access to the real readings of the platform's resources
+  * *RegistrationHandler* (abbr. RH) - service responsible for properly registering platform resources and distributing this information among platform components
+  * *ResourceAccessProxy* (abbr. RAP) - service responsible for providing access to the real readings of the platform resources
   * *AuthenticationAuthorizationManager* (abbr. PAAM) - service responsible for providing a common authentication and authorization mechanism for symbIoTe
   * *Monitoring* - service responsible for monitoring the status of the resources exposed by the platform and notifying symbIoTe core
    * *CloudConfigProperties* - contains a list of properties to configure platform components. It can be found in [CloudConfigProperties](https://github.com/symbiote-h2020/CloudConfigProperties). It must be either deployed in `$HOME/git/symbiote/CloudConfigProperties` or the property `spring.cloud.config.server.git.uri` must be properly set in `src/main/resources/bootstrap.properties` of CloudConfigService component.
 
-For the example integration process described below we assume the following addresses of various Core and Cloud components:
+For the example integration process described below, we assume the following addresses of various Core and Cloud components:
 
   * *Admin GUI*                                        https://core.symbiote.eu:8250
   * *Cloud Core Interface*                             https://core.symbiote.eu:8101/cloudCoreInterface/v1/
@@ -39,16 +39,16 @@ For the example integration process described below we assume the following addr
 
 ## 2. Integration with symbIoTe
 #### 2.1 Provide platform-specific access to the resource and data
-Resource Access Proxy is the component in charge of accessing to the resources. This requires the implementation of a software layer (the RAP platform plugin) in order to allow symbIoTe to be able to communicate with the internal mechanisms of the platform. The plugin will communicate with the generic part of the RAP through the rabbitMQ protocol, in order to decouple the symbIoTe Java implementation from the platform specific language.
+Resource Access Proxy is the component in charge of providing access to the resources. This requires the implementation of a software layer (the RAP platform plugin) in order to allow symbIoTe to be able to communicate with the internal mechanisms of the platform. The plugin will communicate with the generic part of the RAP through the rabbitMQ protocol, in order to decouple the symbIoTe Java implementation from the platform specific language.
 
-This figure shows the architecture of the RAP component (orange parts on the bottom are part of the platform specific plugin, to be implemented from platform owners):
+The figure below figure shows the architecture of the RAP component (orange parts at the bottom are part of the platform specific plugin, to be implemented from platform owners):
 
 ![RAP Architecture](https://github.com/symbiote-h2020/SymbioteCloud/blob/master/resources/figures/RAP-arch_v02.png?raw=true)
 
-Here's a quick list of actions and features that RAP platform specific plugin has to implement:
+Here's a quick list of actions and features that have to be implemented in RAP platform specific plugin:
 
-  * Registers to generic RAP specifying support for filters, notifications
-  * Get read / write requests from RAP generic (w/ or w/o filters)
+  * Sends registration request to generic RAP, specifying support for filters, notifications
+  * Get read/write requests from RAP generic (w/ or w/o filters)
   * Applies filters to ‘get history’ requests (optional)
   * Get subscribe requests from generic RAP (if it supports notifications)
   * Forwards notifications coming from platform to generic RAP
@@ -81,9 +81,9 @@ Depending on if the platform can natively support filters/notifications, differe
     * (Optionally) a platform owner can decide to implement filters in RAP platform specific plugin
     * If platform doesn’t support filters the historical readings are retrieved without any filter
   * Notifications:
-    *  Enable/disable flag in CloudConfigProperties -> rap.northbound.interface.WebSocket=true/false
+    *  Enable/disable flag in CloudConfigProperties -> `rap.northbound.interface.WebSocket=true/false`
 
-In order to receive messages for accessing resources, platform plugin shall create an exchange with name plugin-exchange and then bind to it the following: get, set, history, subscribe, unsubscribe. Access features supported are:
+In order to receive messages for accessing resources, platform plugin shall create an exchange with name `plugin-exchange` and then bind to it the following: get, set, history, subscribe, unsubscribe. Access features supported are:
   * Read current value from resource, e.g.:
 ```
 {
@@ -147,7 +147,7 @@ e.g.:
 }
 ```
 The notifications mechanism follows a different flow than the direct resource access and needs specific a rabbitMQ queues to be used:
-  1. The platform plugin will receive subscription/unsubscription requests from the *plugin-exchange*, using *subscribe/unsubscribe* topic keys. The message will contain a list of resource IDs.
+  1. The platform plugin will receive subscription/unsubscription requests from the `plugin-exchange`, using `subscribe/unsubscribe` topic keys. The message will contain a list of resource IDs.
   2. Notifications should be sent from platform plugin to generic RAP to exchange `symbIoTe.rapPluginExchange-notification` with a routing key `symbIoTe.rapPluginExchange.plugin-notification`. 
 
 All returned messages from read accesses (GET, HISTORY and notifications) are modeled as an instance of *eu.h2020.symbiote.core.model.Observation* class, e.g.:
@@ -183,7 +183,7 @@ All returned messages from read accesses (GET, HISTORY and notifications) are mo
 #### 2.2 Register user and configure platform
 The next step is to create a platform owner user in the symbIoTe Core Admin webpage. During registration, it is also necessary to specify some platform details that are needed for security purposes. These are:
   * Name - name of the platform
-  * Address - url of the platform's Interworking Interface which will provide entry point to sybmIoTe Cloud components.
+  * Address - url of the platform's Interworking Interface which will provide the entry point to sybmIoTe Cloud components.
   * Id - a preferred id for the platform. It is optional, if not provided symbiote will generate one for you
 
 ![Administration Registration](https://github.com/symbiote-h2020/SymbioteCloud/blob/master/resources/figures/Administration_registration.png?raw=true)
@@ -203,7 +203,7 @@ Finally, your platform should be active, and all necessary details (like platfor
 ![Administration Ready](https://github.com/symbiote-h2020/SymbioteCloud/blob/master/resources/figures/Administration_ready.png?raw=true)
 
 #### 2.3 Configuration of the symbIoTe Cloud components
-Before starting symbIoTe Cloud components we need to provide proper configuration in the CloudConfigProperties component. Please edit `application.properties` file contained in this component and provide the following information:
+Before starting symbIoTe Cloud components, we need to provide proper configuration in the CloudConfigProperties component. Please edit `application.properties` file contained in this component and provide the following information:
 ```
 rabbit.host=<TODO set properly>
 rabbit.username=<TODO set properly (e.g. guest for localhost)>
@@ -222,42 +222,41 @@ Once a platform instance is registered through Administration module, the Platfo
 | ------------- |:-------------:|:---------:|:------------:|:-----------------:|:----------------------------------------:|:----------
 | *PL* | Wielkopolska | Poznan | PSNC | IoT Department| psnc-platform-1 | iot-1.symbiote.man.poznan.pl |
 
-For those data we will provide you with a keystore file containing the certificate required to set-up your platform AAM module.
+For those data we will provide you with a keystore file containing the certificate required to set-up your platform *AAM* module.
 
 ##### 2.4.2 SSL certificate
-To secure communication between the clients and your platform instance you need an SSL certificate(s) for your PAAM and for your InterworkingInterface. Should they be deployed on the same host, the certificate can be reused in both components.
+To secure communication between the clients and your platform instance you need an SSL certificate(s) for your *PAAM* and for your *InterworkingInterface* (i.e. nginx). Should they be deployed on the same host, the certificate can be reused in both components.
 
 ##### 2.4.2.1 How to issue the certificate
-Issue using e.g. https://letsencrypt.org/
-A certificate can be obtained using the certbot shell tool (https://certbot.eff.org/) only for resolvable domain name.
-Instructions for the Ubuntu (Debian) machine are the following: 
-1. Install certbot:
-```
-sudo apt-get install software-properties-common
-sudo add-apt-repository ppa:certbot/certbot
-sudo apt-get update
-sudo apt-get install certbot python-certbot-apache
-```
-2. Obtain the certificate by executing:
-```
-certbot --apache certonly
-```
-Apache port (80 by default) should be accessible from outside on your firewall. Select option Standalone (option 2) and enter your domain name.
+* Issue using e.g. https://letsencrypt.org/
+* A certificate can be obtained using the certbot shell tool (https://certbot.eff.org/) only for resolvable domain name. Instructions for the Ubuntu (Debian) machine are the following: 
+  * Install certbot:
+  ```
+  sudo apt-get install software-properties-common
+  sudo add-apt-repository ppa:certbot/certbot
+  sudo apt-get update
+  sudo apt-get install certbot python-certbot-apache
+  ```
+  * Obtain the certificate by executing:
+  ```
+  certbot --apache certonly
+  ```
+    Apache port (80 by default) should be accessible from outside on your firewall. Select option Standalone (option 2) and enter your domain name.
 
-3. Upon successful execution navigate to the location `/etc/letsencrypt/live/<domain_name>/`, where you can find your certificate and private key (5 files in total, cert.pem  chain.pem  fullchain.pem  privkey.pem  README).
+  * Upon successful execution navigate to the location `/etc/letsencrypt/live/<domain_name>/`, where you can find your certificate and private key (5 files in total, cert.pem  chain.pem  fullchain.pem  privkey.pem  README).
 
 ##### 2.4.2.2 How to create a Java Keystore with the issued SSL certificate, required for Platform AAM deployment
 Create a Java Keystore containing the certificate. Use the [KeyStore Explorer](http://keystore-explorer.org/downloads.html) application to create JavaKeystore :
 
-1. (optionally) Inspect obtained files using Examine --> Examine File
-2. Create a new Keystore --> PKCS #12
-3. Tools --> Import Key Pair --> PKCS #8
-4. Deselect Encrypted Private Key
-   Browse and set your private key (privkey.pem)
-   Browse and set your certificate (fullchain.pem)
-5. Import --> enter alias for the certificate for this keystore
+1. (optionally) Inspect obtained files using *Examine* --> Examine File
+2. *Create a new Keystore --> PKCS #12*
+3. *Tools --> Import Key Pair --> PKCS #8*
+4. Deselect *Encrypted Private Key*  
+   Browse and set your private key (**privkey.pem**)  
+   Browse and set your certificate (**fullchain.pem**)  
+5. *Import --> enter alias for the certificate for this keystore*
 6. Enter password
-7. File --> Save --> enter previously set password  --> \<filename\>.p12
+7. *File --> Save --> enter previously set password  --> \<filename\>.p12*
    Note: Filename will be used as configuration parameter of the Platform AAM component.
     `server.ssl.key-store=classpath:<filename>.p12`
 
@@ -310,14 +309,14 @@ gradle assemble
 and then run the Platform AAM jar as any other Symbiote component.
 
 ##### 2.4.4 Veryfing that Platform AAM is working
-Verify all is ok by going to:
+Verify everything is ok by going to:
 ```
 https://<yourPaamHostname>:<selected port>/get_ca_cert  
 ```
 The content there is your Platform AAM instance's certificate in PEM format.
 
 ##### 2.4.5 Veryfing that InterworkingInterface is working
-Verify all is ok by going to:
+Verify everything is ok by going to:
 ```
 https://<yourNginxHostname>/paam/get_ca_cert  
 ```
@@ -334,7 +333,7 @@ https://<yourPaamHostname>:<selected port>/app_registration
 ```
 
 #### 2.5  Setting up your Monitoring
-The installation of the monitoring component is detailed [here](https://github.com/symbiote-h2020/SymbioteCloud/raw/master/resources/docs/SymbIoTe_Monitoring_guide.pdf)
+The installation of the monitoring component is detailed [here](https://github.com/symbiote-h2020/SymbioteCloud/raw/master/resources/docs/SymbIoTe_Monitoring_guide.pdf).
 
 #### 2.6 Starting symbIoTe Cloud components
 Starting symbIoTe Cloud components can be done in following steps:
@@ -353,7 +352,7 @@ java -jar build/libs/{Component}
 ```
 
 #### 2.7 Register resource
-After our platform has been registered and symbIoTe Cloud components for our platform are configured and are running, we can proceed to expose some of our platform's resources to symbIoTe Core. List of properties that are supported in the description in R2 can be found here: List of properties supported in R2 (BIM + imported models). This is done by sending *HTTP POST* request containing resource description on *RegistrationHandler*'s registration endpoint (i.e. https://myplatform.eu:8102/rh/resources). Exemplary description is shown below:
+After our platform has been registered and symbIoTe Cloud components for our platform are configured and are running, we can proceed to expose some of our platform's resources to symbIoTe Core. This is done by sending *HTTP POST* request containing resource description on *RegistrationHandler*'s registration endpoint (i.e. https://myplatform.eu:8102/rh/resources). Exemplary description is shown below:
   ```
   [
   {
@@ -474,7 +473,7 @@ After our platform has been registered and symbIoTe Cloud components for our pla
 ]
   ```
 ##### NOTE:
-The *interworkingServiceURL* of each resource should be the same with the *interworkingServiceURL* specified during platform registration. RH uses II (i.e. nginx) to communicate with symbIoTe Core to register our platform's resource. If the registration process is successful Core returns resource containing field id (i.e. symbIoTeId) with unique, generated id of the resource in the symbIoTe Core layer. Information about the registered resource is distributed in Cloud components using RabbitMQ messaging.
+The *interworkingServiceURL* of each resource should be the same with the *interworkingServiceURL* specified during platform registration. RH uses II (i.e. nginx) to communicate with symbIoTe Core to register our platform's resource. If the registration process is successful Core returns resource containing field id (i.e. symbIoTeId) with a uniquely generated id of the resource in the symbIoTe Core layer. Information about the registered resource is distributed in Cloud components using RabbitMQ messaging.
 
 #### 2.8 Update resources
 After registering resources, it is also possible to update them. This is done by sending *HTTP PUT* request containing resource description on *RegistrationHandler*'s update endpoint (i.e. https://myplatform.eu:8102/rh/resources). Exemplary description is shown below:
@@ -600,17 +599,17 @@ After registering resources, it is also possible to update them. This is done by
 ```
 
 ##### NOTE:
-The *interworkingServiceURL* of each resource should be the same with the *interworkingServiceURL* specified during platform registration. RH uses II (i.e. nginx) to communicate with symbIoTe Core to update our platform's resource. The *id* of each resource should be the same *id* returned during registration.
+The *interworkingServiceURL* of each resource should be the same as the *interworkingServiceURL* specified during platform registration. RH uses II (i.e. nginx) to communicate with symbIoTe Core to update our platform's resource description. The *id* of each resource should be the same *id* returned during registration.
 
 #### 2.9 Delete resources
 After registering resources, it is also possible to delete them. This is done by sending *HTTP DELETE* request containing the internal ids on *ResourceHandler*'s delete endpoint (e.g. https://myplatform.eu:8102/rh/resources?resourceInternalId=1600,1700).
 
 
 ## 3 Test integrated resource
-After our resource have been shared with Core we can test if we can find and access it properly.
+After our resources have been shared with Core we can test if we can find and access them properly.
 
 #### 3.1 Search for resource
-To search for resource we need to create a query to the symbIoTe Core. In our example, we use https://core.symbiote.eu:8100/coreInterface/v1/query endpoint and provide parameters for querying. Requests need *X-Auth-Token* header to be specified with current token of the user (currently tokens are not validated). All possible query parameters can be seen below:
+To search for resource we need to create a query to the symbIoTe Core. In our example, we use https://core.symbiote.eu:8100/coreInterface/v1/query endpoint and provide parameters for querying. All possible query parameters can be seen below:
 ```
 Query parameters {
          platform_id:           String
@@ -640,7 +639,7 @@ Text parameters allow substring searches using '\*' character which can be place
 * location_name
 * observed_property
 
-For our example lets search for resources with name *Sensor1*. We do it by sending *HTTP GET* request on symbIoTe Core Interface (e.g. https://core.symbiote.eu:8100/coreInterface/v1/query?name=Stationary 1). The response contains a list of resources fulfilling the criteria:
+For our example lets search for resources with name *Stationary 1*. We do it by sending *HTTP GET* request on symbIoTe Core Interface (e.g. https://core.symbiote.eu:8100/coreInterface/v1/query?name=Stationary 1). The response contains a list of resources fulfilling the criteria:
 ```
 {
   "resources": [
@@ -667,7 +666,7 @@ For our example lets search for resources with name *Sensor1*. We do it by sendi
 }
 ```
 ##### 3.1.2 SPARQL query endpoint
-In release 0.2.0, an additional endpoint was created to allow sending *SPARQL* queries to symbIoTe Core. To send *SPARQL* requests we need to send request by using *HTTP POST* with *X-Auth-Token"*header (see above) to the url: https://core.symbiote.eu:8100/coreInterface/v1/sparqlQuery. The endpoint accepts the following payload:
+In release 0.2.0, an additional endpoint was created to allow sending *SPARQL* queries to symbIoTe Core. To send *SPARQL* queries, we need to send a request by using *HTTP POST* to the url: https://core.symbiote.eu:8100/coreInterface/v1/sparqlQuery. The endpoint accepts the following payload:
 ```
 { 
     "sparqlQuery" : "<sparql>",
@@ -675,8 +674,7 @@ In release 0.2.0, an additional endpoint was created to allow sending *SPARQL* q
     
 }
 ```
-Possible output formats include: SRX, XML, JSON, SRJ, SRT, THRIFT, SSE, CSV, TSV, SRB, TEXT, COUNT, TUPLES, NONE, RDF, RDF_N3, RDF_XML, N3, TTL, TURTLE, GRAPH, NT, N_TRIPLES, TRIG 
-SPARQL allows for powerful access to all the meta information stored within symbIoTe Core. Below you can find few example queries:
+Possible output formats include: SRX, XML, JSON, SRJ, SRT, THRIFT, SSE, CSV, TSV, SRB, TEXT, COUNT, TUPLES, NONE, RDF, RDF_N3, RDF_XML, N3, TTL, TURTLE, GRAPH, NT, N_TRIPLES, TRIG. SPARQL allows for powerful access to all the meta information stored within symbIoTe Core. Below you can find few example queries:
 
 * Query all resources of the core
 ```
@@ -714,7 +712,7 @@ returns the following output:
 To access the resource we need to ask symbIoTe Core for the access url. To do so, we need to send a *HTTP GET* request on https://core.symbiote.eu:8100/coreInterface/v1/resourceUrls?id=589dc62a9bdddb2d2a7ggab8. To access the endpoint, we need to specify *X-Auth-Token* header with a valid platform token of the user that is trying to access the resources. 
 
 ##### 3.3.1 Request a platform token directly
-In this case, you can request a platform token from the PAAM of the platform which owns the resources you are interested in. For that, you have to issue a *HTTP POST* request to "https://myplatform.eu:8102/paam/login" containing the following:
+In this case, you can request a platform token from the PAAM of the platform which owns the resources you are interested in. For that, you have to issue a *HTTP POST* request to https://myplatform.eu:8102/paam/login containing the following:
 ```
 {
   "username" : "The username name used when registering to the PLATFORM",
@@ -727,7 +725,7 @@ The token will be contained in the *X-Auth-Token* header field of the response.
 If you do not know the PAAM url, then you can issue a *HTTP GET* request to https://core.symbiote.eu:8100/coreInterface/v1/get_available_aams and distinguishing the desired PAAM by the *platform id*. 
 
 ##### 3.3.2 Request a platform token by providing a core token
-In this case, first you have to get a core token. For that, you have to issue a "HTTP POST" request to http:/core.symbiote.eu:8100/coreInterface/v1/login containing the following:
+In this case, first you have to get a core token. For that, you have to issue a "HTTP POST" request to https://core.symbiote.eu:8100/coreInterface/v1/login containing the following:
 ```
 {
   "username" : "The username name used when registering to the symbIoTe CORE",
@@ -747,7 +745,7 @@ If we provide correct ids of the resources along with a valid platform token, we
  
 #### 3.3 Accessing the resource and triggering fetching of our example data
 ##### NOTE:
-First you have to get a valid platform token and included it in the "X-Auth-Token" header field as described above. The same token used to get the resource url can be used if it is still valid.  
+First, you have to get a valid platform token and included it in the *X-Auth-Token* header field as described above. The same token used to get the resource url can also be used for accessing the resource if it is still valid.  
 
 As stated previously, RAP can be configured to support different interfaces for accessing the data:
 * OData
