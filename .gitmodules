@@ -4,12 +4,6 @@
 [submodule "CloudConfigService"]
 	path = CloudConfigService
 	url = https://github.com/symbiote-h2020/CloudConfigService.git
-[submodule "InterworkingInterface"]
-	path = InterworkingInterface
-	url = https://github.com/symbiote-h2020/InterworkingInterface.git
-[submodule "CloudAuthenticationAuthorizationManager"]
-	path = CloudAuthenticationAuthorizationManager
-	url = https://github.com/symbiote-h2020/CloudAuthenticationAuthorizationManager.git
 [submodule "Monitoring"]
 	path = Monitoring
 	url = https://github.com/symbiote-h2020/Monitoring.git
@@ -22,3 +16,6 @@
 [submodule "EurekaService"]
 	path = EurekaService
 	url = https://github.com/symbiote-h2020/EurekaService.git
+[submodule "AuthenticationAuthorizationManager"]
+	path = AuthenticationAuthorizationManager
+	url = https://github.com/symbiote-h2020/AuthenticationAuthorizationManager.git
