@@ -210,9 +210,9 @@ rabbit.username=<TODO set properly (e.g. guest for localhost)>
 rabbit.password=<TODO set properly (e.g. guest for localhost)>
 security.user=<TODO set properly (username used during registration)>
 security.password=<TODO set properly (password used during registration)>
-symbiote.coreaam.url=<TODO set properly (format: https://{nginxIp}:{nginxPort}/coreInterface/v1 e.g. https://localhost:8102/coreInterface/v1)>
+symbiote.coreaam.url=<TODO set properly (format: http://{nginxIp}:{nginxPort}/coreInterface/v1 e.g. http://localhost:8102/coreInterface/v1)>
 platform.id=<TODO set properly>
-symbIoTe.interworkinginterface.url=<TODO set properly (format: https://{nginxIp}:{nginxPort}/cloudCoreInterface/v1 e.g. https://localhost:8102/cloudCoreInterface/v1)>
+symbIoTe.interworkinginterface.url=<TODO set properly (format: http://{nginxIp}:{nginxPort}/cloudCoreInterface/v1 e.g. http://localhost:8102/cloudCoreInterface/v1)>
 ```
 #### 2.4  Setting up the Platform Authentication and Authorization Manager
 ##### 2.4.1 PAAM certificate
