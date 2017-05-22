@@ -5,7 +5,7 @@ As a result of the following steps you will setup and run symbIoTe Cloud compone
 ## 1. Preparation steps.
 #### 1.1 Installation of required tools for symbIoTe platform components
 Platform components require the following tools to be installed:
-  * [Java Runtime Environment](https://java.com/download) - You need Oracle Java 8 version 101+ [Letsencrypt certificate compatibility](https://letsencrypt.org/docs/certificate-compatibility/)
+  * [Java Runtime Environment](https://java.com/download) - You need Oracle Java 8 version 101+ [(Letsencrypt certificate compatibility)](https://letsencrypt.org/docs/certificate-compatibility/)
   * [RabbitMQ](https://www.rabbitmq.com/) - message queue server for internal messaging between platform components
   * [MongoDB](https://www.mongodb.com/) - database used by Registration Handler and Interworking Interface
   * [Icinga 2](https://www.icinga.com/products/icinga-2/) - for monitoring the registered resources
@@ -624,7 +624,7 @@ Query parameters {
          location_long:         Double
          max_distance:          Integer
          observed_property:     List<String>
-		 resource_type: 		String 
+         resource_type: 	String 
 }
 ```
 ##### NOTE 1:
