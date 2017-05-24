@@ -757,8 +757,8 @@ The applications can:
 * Write value into resource
 
 3.3.1 OData access
-* GET  https://myplatform.eu:8102/rap/Sensor('symbioteId')/Observations? $top=1
-* GET https://myplatform.eu:8102/rap/Sensor('symbioteId')/Observations
+* GET  https://myplatform.eu:8102/rap/Sensors('symbioteId')/Observations? $top=1
+* GET https://myplatform.eu:8102/rap/Sensors('symbioteId')/Observations
   Historical readings can be filtered, using the option $filter.
   Operators supported: 
   * Equals
@@ -767,7 +767,7 @@ The applications can:
   * Greater Than
   * And
   * Or
-* PUT https://myplatform.eu:8102/rap/Actuator(‘actuatorId')/ActuatingService(‘serviceId')
+* PUT https://myplatform.eu:8102/rap/ActuatingServices(‘serviceId')
 ```
 {
     "inputParameters":
