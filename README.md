@@ -181,7 +181,7 @@ All returned messages from read accesses (GET, HISTORY and notifications) are mo
 
 
 #### 2.2 Register user and configure platform
-The next step is to create a platform owner user in the symbIoTe Core Admin webpage. During registration, it is also necessary to specify some platform details that are needed for security purposes. These are:
+The next step is to create a platform owner user in the symbIoTe Core Admin webpage (running by default on SymbIoTe core on port 8250, so for now: https://symbiote-dev.man.poznan.pl:8250). During registration, it is also necessary to specify some platform details that are needed for security purposes. These are:
   * Name - name of the platform
   * Address - url of the platform's Interworking Interface which will provide the entry point to sybmIoTe Cloud components.
   * Id - a preferred id for the platform. It is optional, if not provided symbiote will generate one for you
