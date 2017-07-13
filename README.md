@@ -17,7 +17,7 @@ Platform components require the following tools to be installed:
   Besides that platform owner will need to provide a Java implementation of the platform-specific access to the resources and their readings (observations). So, some *IDE* for writing code and *Gradle* for building and running of the components is required (use version 3, version 2.x can not build Registration Handler properly) . 
 
 #### 1.2 Download symbIoTe platform components
-Platform components are available in the GitHub, bundled in the [SymbioteCloud](https://github.com/symbiote-h2020/SymbioteCloud) repository. If you just want to deploy but not develop/commit any changes, you can get all components straight from the superproject:
+Platform components are available in the GitHub, bundled in the [SymbioteCloud](https://github.com/symbiote-h2020/SymbioteCloud) repository. If you just want to deploy but not develop/commit any changes, you can get all components straight from the superproject:  
    `git clone --recursive https://github.com/symbiote-h2020/SymbioteCloud.git`
    
 Master branches contain the latest stable symbIoTe release version, develop branch is a general development branch containing the newest features that are added during development and particular feature branches are where new features are developed. For symbIoTe cloud installation, the following components are currently being used and required to properly start platform in L1 compliance:
