@@ -845,11 +845,11 @@ The applications can:
       [ 
         {
           "restricition1": “value1",
-         },
-         {
-           "restricition2": “value2",
-         },
-         …
+        },
+        {
+          "restricition2": “value2",
+        },
+        …
       ]
     }
     ```
