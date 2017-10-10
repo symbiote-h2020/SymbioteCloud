@@ -844,10 +844,10 @@ The applications can:
       "capability":
       [ 
         {
-          "restricition1": “value1",
+          "restriction1": “value1",
         },
         {
-          "restricition2": “value2",
+          "restriction2": “value2",
         },
         …
       ]
@@ -869,10 +869,10 @@ The same reasoning applies for _capability, restriction_ and _value._
       "capability":
       [ 
         {
-          "restricition1": “value1",
+          "restriction1": “value1",
         },
         {
-          "restricition2": “value2",
+          "restriction2": “value2",
         },
         …
       ]
