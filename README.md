@@ -485,18 +485,14 @@ To manage your local users you can use the AMQP API listening on:
 rabbit.queue.manage.user.request=symbIoTe-AuthenticationAuthorizationManager-manage\_user\_request
 rabbit.routingKey.manage.user.request=symbIoTe.AuthenticationAuthorizationManager.manage\_user\_request
 ```
-With the following contents:
+With the following contents:   
 
-| **Request payload** | **Response** |
-| --- | --- |
-| <div> OperationType#CREATE  [UserManagementRequest](https://github.com/symbiote-h2020/SymbIoTeSecurity/blob/develop/src/main/java/eu/h2020/symbiote/security/communication/payloads/UserManagementRequest.java) <div> admin credentials // for operation authorization</li><li>user credentials (username, password) </li><li>user details (recovery mail, federated ID)</li></ul></div>
- | [ManagementStatus](https://github.com/symbiote-h2020/SymbIoTeSecurity/blob/develop/src/main/java/eu/h2020/symbiote/security/commons/enums/ManagementStatus.java) |   
-| <div>OperationType#UPDATE  [UserManagementRequest](https://github.com/symbiote-h2020/SymbIoTeSecurity/blob/develop/src/main/java/eu/h2020/symbiote/security/communication/payloads/UserManagementRequest.java) <ul><li>admin credentials // for operation authorization </li><li> user credentials // for operation authorization </li><li>user credentials (password to store new password) </li><li>user details (recovery mail, federated ID)</li></ul></div>
- |[ManagementStatus](https://github.com/symbiote-h2020/SymbIoTeSecurity/blob/develop/src/main/java/eu/h2020/symbiote/security/commons/enums/ManagementStatus.java)|   
-| <div> OperationType#DELETE  [UserManagementRequest](https://github.com/symbiote-h2020/SymbIoTeSecurity/blob/develop/src/main/java/eu/h2020/symbiote/security/communication/payloads/UserManagementRequest.java) <ul><li>admin credentials // for operation authorization</li><li> user credentials (username to find user in repository)</li></ul></div>
- |[ManagementStatus](https://github.com/symbiote-h2020/SymbIoTeSecurity/blob/develop/src/main/java/eu/h2020/symbiote/security/commons/enums/ManagementStatus.java)|   
-| <div> OperationType#FORCED_UPDATE  [UserManagementRequest](https://github.com/symbiote-h2020/SymbIoTeSecurity/blob/develop/src/main/java/eu/h2020/symbiote/security/communication/payloads/UserManagementRequest.java) mandatory fields<ul></li>admin credentials // for operation authorization</li><li>user credentials (username to resolve user, password to store new password)</li></ul></div>
- |[ManagementStatus](https://github.com/symbiote-h2020/SymbIoTeSecurity/blob/develop/src/main/java/eu/h2020/symbiote/security/commons/enums/ManagementStatus.java)|   
+| **Request payload**                                                                                                                                                                                                                                                                                                                                                                                    | **Response**                                                                                                                                                     |
+|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| <div> OperationType#CREATE  [UserManagementRequest](https://github.com/symbiote-h2020/SymbIoTeSecurity/blob/develop/src/main/java/eu/h2020/symbiote/security/communication/payloads/UserManagementRequest.java) <ul><li> admin credentials // for operation authorization</li><li>user credentials (username, password) </li><li>user details (recovery mail, federated ID)</li></ul></div>                                                             | [ManagementStatus](https://github.com/symbiote-h2020/SymbIoTeSecurity/blob/develop/src/main/java/eu/h2020/symbiote/security/commons/enums/ManagementStatus.java) |
+| <div>OperationType#UPDATE  [UserManagementRequest](https://github.com/symbiote-h2020/SymbIoTeSecurity/blob/develop/src/main/java/eu/h2020/symbiote/security/communication/payloads/UserManagementRequest.java) <ul><li>admin credentials // for operation authorization </li><li> user credentials // for operation authorization </li><li>user credentials (password to store new password) </li><li>user details (recovery mail, federated ID)</li></ul></div> | [ManagementStatus](https://github.com/symbiote-h2020/SymbIoTeSecurity/blob/develop/src/main/java/eu/h2020/symbiote/security/commons/enums/ManagementStatus.java) |
+| <div> OperationType#DELETE  [UserManagementRequest](https://github.com/symbiote-h2020/SymbIoTeSecurity/blob/develop/src/main/java/eu/h2020/symbiote/security/communication/payloads/UserManagementRequest.java) <ul><li>admin credentials // for operation authorization</li><li> user credentials (username to find user in repository)</li></ul></div>                                                                                       | [ManagementStatus](https://github.com/symbiote-h2020/SymbIoTeSecurity/blob/develop/src/main/java/eu/h2020/symbiote/security/commons/enums/ManagementStatus.java) |
+| <div> OperationType#FORCED_UPDATE  [UserManagementRequest](https://github.com/symbiote-h2020/SymbIoTeSecurity/blob/develop/src/main/java/eu/h2020/symbiote/security/communication/payloads/UserManagementRequest.java) mandatory fields<ul></li>admin credentials // for operation authorization</li><li>user credentials (username to resolve user, password to store new password)</li></ul></div> | [ManagementStatus](https://github.com/symbiote-h2020/SymbIoTeSecurity/blob/develop/src/main/java/eu/h2020/symbiote/security/commons/enums/ManagementStatus.java) | 
 
 ### 2.5 Starting symbIoTe Cloud components
 
@@ -760,7 +756,7 @@ SPARQL allows for powerful access to all the meta information stored within symb
 - Query all resources of the core
 
 ```
- {
+{
     "sparqlQuery" : "PREFIX cim: <http://www.symbiote-h2020.eu/ontology/core#> PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> SELECT ?res ?resourceName WHERE { ?res a cim:Resource. ?res rdfs:label ?resourceName . }",
     "outputFormat" : "TEXT"
 }
