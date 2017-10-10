@@ -65,7 +65,7 @@ Resource Access Proxy is the component in charge of accessing to the resources. 
 
 This figure shows the architecture of the RAP component (orange parts on the bottom are part of the platform specific plugin, to be implemented from platform owners):
 
-![RAP Architecture](https://github.com/symbiote-h2020/SymbioteCloud/blob/master/resources/figures/RAP-arch_v02.png?raw=true)
+![RAP Architecture](https://github.com/symbiote-h2020/SymbioteCloud/blob/master/resources/figures/RAP-arch_v02.png?raw=true "RAP Architecture")
 
 Here a quick list of actions and features that RAP platform specific plugin has to implement:
 
@@ -224,7 +224,7 @@ All returned messages from read accesses (GET, HISTORY and notifications) are mo
   }
 ]
 ```
-
+![RAP Plugin communication](https://github.com/symbiote-h2020/SymbioteCloud/raw/master/resources/figures/RAP_Plugin_communication.png "RAP Plugin communication")
 
 ### 2.2 Register user and configure platform
 
@@ -235,6 +235,7 @@ The next step is to create a platform owner user in the symbIoTe Core Admin webp
 - email
 - user role (i.e. Platform Owner in this case)
 
+![Platform Owner Registration](https://github.com/symbiote-h2020/SymbioteCloud/raw/master/resources/figures/platform_owner_registration.png "Platform Owner Registration")
 
 Afterwards, you can log in as the new user and register your platform. To this end, you have to click on the **_Platform Details_** panel and then on **_Register New Platform_** button on the upper right corner.
 
@@ -249,9 +250,11 @@ Then, you have to provide the following details:
 - Interworking Interface information model
 - Type (i.e. Platform or Enabler)
 
+![Platform Registration](https://github.com/symbiote-h2020/SymbioteCloud/raw/master/resources/figures/platform_registration.png "Platform Registration")
 
 Then, you will see the panel of the newly registered Platform and check its details by clicking on its header.
 
+![Platform Details](https://github.com/symbiote-h2020/SymbioteCloud/raw/master/resources/figures/platform_details.png "Platform Details")
 
 If you want to use another information model, not currently available in the symbIoTe Core, then you can upload your own information model. To do so, go to the **_Information Model_** panel and click on the **_Register New Information Model_** button.
 
@@ -262,11 +265,12 @@ Then, you have to provide the following:
 Also note, that due to some shortcoming in handling URLs the URL MAY NOT end in a slash!
 - file describing the Platform Information Model in an appropriate format (i.e. .ttl, .nt, .rdf, .xml, .n3, .jsonld)
 
-
+![Register Information Model](https://github.com/symbiote-h2020/SymbioteCloud/raw/master/resources/figures/register_info_model.png "Register Information Model")
 
 
 Finally, you will see the panel of the newly registered Information Model and check its details by clicking on its header. Again, you can of course delete the Information Modle by clicking on the **_Delete_** button and **_Verify_** your action.
 
+![Information Model Details](https://github.com/symbiote-h2020/SymbioteCloud/raw/master/resources/figures/info_model_details.png "Information Model Details")
 
 #### 2.2.1 Creating a Platform-Specific Information Model (PIM)
 
@@ -391,7 +395,8 @@ Browse and set your certificate ( **fullchain**.pem)
 5. Import --> enter alias for the certificate for this keystore
 6. Enter password
 7. File --> Save --> enter previously set password  --> <filename>.p12    
-  Filename will be used as configuration parameter of the Platform AAM component.`server.ssl.key-store=classpath:<filename>.p12`
+  Filename will be used as configuration parameter of the Platform AAM component.   
+  `server.ssl.key-store=classpath:<filename>.p12`
 
 If you do not want to use KeyStore Explorer find some helpful resources below:  
 * https://community.letsencrypt.org/t/how-to-get-certificates-into-java-keystore/25961/19  
@@ -745,8 +750,8 @@ The endpoint accepts the following payload:
 
 ```
 {
-    "sparqlQuery" : "<sparql>",
-    "outputFormat" : "<format>"
+  "sparqlQuery" : "<sparql>",
+  "outputFormat" : "<format>"
 }
 ```
 Possible output formats include: SRX, **XML** , **JSON** , SRJ, SRT, THRIFT, SSE, **CSV** , TSV, SRB, **TEXT** , **COUNT, TUPLES, NONE, RDF, RDF\_N3, RDF\_XML, N3,** TTL **,** TURTLE ****,** GRAPH, NT, N\_TRIPLES, TRIG
@@ -757,8 +762,8 @@ SPARQL allows for powerful access to all the meta information stored within symb
 
 ```
 {
-    "sparqlQuery" : "PREFIX cim: <http://www.symbiote-h2020.eu/ontology/core#> PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> SELECT ?res ?resourceName WHERE { ?res a cim:Resource. ?res rdfs:label ?resourceName . }",
-    "outputFormat" : "TEXT"
+  "sparqlQuery" : "PREFIX cim: <http://www.symbiote-h2020.eu/ontology/core#> PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> SELECT ?res ?resourceName WHERE { ?res a cim:Resource. ?res rdfs:label ?resourceName . }",
+  "outputFormat" : "TEXT"
 }
 ```
 
@@ -776,8 +781,8 @@ returns the following output:
 
 ```
 {
-    "sparqlQuery" : "PREFIX cim: <http://www.symbiote-h2020.eu/ontology/core#> PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> SELECT ?res ?resourceName ?inputName ?inputDatatype WHERE { ?res a cim:Service. ?res rdfs:label ?resourceName . ?res cim:hasInputParameter ?input . ?input cim:name ?inputName . ?input cim:datatype ?inputDatatype }",
-    "outputFormat" : "TEXT"
+  "sparqlQuery" : "PREFIX cim: <http://www.symbiote-h2020.eu/ontology/core#> PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> SELECT ?res ?resourceName ?inputName ?inputDatatype WHERE { ?res a cim:Service. ?res rdfs:label ?resourceName . ?res cim:hasInputParameter ?input . ?input cim:name ?inputName . ?input cim:datatype ?inputDatatype }",
+  "outputFormat" : "TEXT"
 }
 ```
 returns the following output:
@@ -799,9 +804,9 @@ To access the resource we need to ask symbIoTe Core for the access link. To do s
 If we provide correct ids of the resources along with a valid security credentials in the header, we will get a response containing URLs to access the resources:
 ```
 {
-        "589dc62a9bdddb2d2a7ggab8": "https://myplatform.eu:8102/rap/Sensor(&#39;589dc62a9bdddb2d2a7ggab8&#39;)",
-        "589dc62a9bdddb2d2a7ggab9": "https://myplatform.eu:8102/rap/Sensor(&#39;589dc62a9bdddb2d2a7ggab9&#39;)"
- }
+  "589dc62a9bdddb2d2a7ggab8": "https://myplatform.eu:8102/rap/Sensor(&#39;589dc62a9bdddb2d2a7ggab8&#39;)",
+  "589dc62a9bdddb2d2a7ggab9": "https://myplatform.eu:8102/rap/Sensor(&#39;589dc62a9bdddb2d2a7ggab9&#39;)"
+}
 ```
 
 ### 3.3 Accessing the resource and triggering fetching of our example data
@@ -836,16 +841,16 @@ The applications can:
 
     ```
     {
-         "capability":
-         [ 
-             {
-                  "restricition1": “value1",
-             },
-             {
-                  "restricition2": “value2",
-             },
-             …
-         ]
+      "capability":
+      [ 
+        {
+          "restricition1": “value1",
+         },
+         {
+           "restricition2": “value2",
+         },
+         …
+      ]
     }
     ```
 
@@ -861,16 +866,16 @@ The same reasoning applies for _capability, restriction_ and _value._
     
     ```
     {
-        "capability":
-        [ 
-            {
-                 "restricition1": “value1",
-            },
-            {
-                 "restricition2": “value2",
-            },
-            …
-        ]
+      "capability":
+      [ 
+        {
+          "restricition1": “value1",
+        },
+        {
+          "restricition2": “value2",
+        },
+        …
+      ]
     }
     ```
 ### 3.3.3 Push feature
