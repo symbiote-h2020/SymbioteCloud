@@ -195,7 +195,7 @@ The notifications mechanism follows a different flow than the direct resource ac
 
 2) Notifications should be sent from platform plugin to generic RAP to exchange _symbIoTe.rapPluginExchange-notification_ with a routing key _symbIoTe.rapPluginExchange.plugin-notification._
 
-All returned messages from read accesses (GET, HISTORY and notifications) are modeled as an instance of_ eu.h2020.symbiote.core.model.Observation class_, e.g.:
+All returned messages from read accesses (GET, HISTORY and notifications) are modeled as an instance of _eu.h2020.symbiote.core.model.Observation class_, e.g.:
 
 ```
 [
@@ -836,7 +836,7 @@ The applications can:
    4. Greater Than
    5. And
    6. Or
-3. _PUT_ _https://myplatform.eu:8102/__rap/{Model}s('serviceId')_   
+3. _PUT_ _https://myplatform.eu:8102/rap/{Model}s('serviceId')_   
     ***Request body:***   
 
     ```
