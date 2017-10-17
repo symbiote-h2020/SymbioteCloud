@@ -465,30 +465,30 @@ and run the Platform AAM jar as any other Symbiote component
 
 Verify all is ok by going to:
 ```
-https://<yourPaamHostname>:<selected port>/get\_available\_aams
+https://<yourPaamHostname>:<selected port>/get_available_aams
 ```
 There you should see the connection green and the content are the symbiote security endpoints fetched from the core
 
 Also you can check that the certificate listed there matches the one you get here:
 ```
-https://<yourPaamHostname>:<selected port>/get\_component\_certificate/platform/<your\_platform\_id>/component/aam
+https://<yourPaamHostname>:<selected port>/get_component_certificate/platform/<your_platform_id>/component/aam
 ```
 
 #### 2.4.5 Veryfing that InterworkingInterface is working
 
 Verify all is ok by going to:
 ```
-https://<yourNginxHostname>:8102/paam/get\_component\_certificate/platform/<your\_platform\_id>/component/aam
+https://<yourNginxHostname>:8102/paam/get_component_certificate/platform/<your_platform_id>/component/aam
 ```
-There you should see the connection green and the content is your Platform AAM instance&#39;s certificate in PEM format.
+There you should see the connection green and the content is your Platform AAM instance's certificate in PEM format.
 
 #### 2.4.6 Platform AAM managment
 
 To manage your local users you can use the AMQP API listening on:
 
 ```
-rabbit.queue.manage.user.request=symbIoTe-AuthenticationAuthorizationManager-manage\_user\_request
-rabbit.routingKey.manage.user.request=symbIoTe.AuthenticationAuthorizationManager.manage\_user\_request
+rabbit.queue.manage.user.request=symbIoTe-AuthenticationAuthorizationManager-manage_user_request
+rabbit.routingKey.manage.user.request=symbIoTe.AuthenticationAuthorizationManager.manage_user_request
 ```
 With the following contents:   
 
