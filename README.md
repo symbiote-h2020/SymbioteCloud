@@ -336,16 +336,16 @@ String platformId = "";
 String keyStorePath = "";
 
 // used to access the keystore. MUST NOT be longer than 7 chars
-// from spring bootstrap file: aam.security.KEY\_STORE\_PASSWORD
-// Further more as the Java security package is working totally against the API - ignores the privateKeyPassword. - IT MUST BE THE SAME as spring bootstrap file: aam.security.PV\_KEY\_PASSWORD
+// from spring bootstrap file: aam.security.KEY_STORE_PASSWORD
+// Further more as the Java security package is working totally against the API - ignores the privateKeyPassword. - IT MUST BE THE SAME as spring bootstrap file: aam.security.PV_KEY_PASSWORD
 String keyStorePassword = "";
 
 // platform AAM key/certificate alias... case INSENSITIVE (all lowercase)
-// from spring bootstrap file: aam.security.CERTIFICATE\_ALIAS
+// from spring bootstrap file: aam.security.CERTIFICATE_ALIAS
 String aamCertificateAlias = "";
 
 // root CA certificate alias... case INSENSITIVE (all lowercase)
-// from spring bootstrap file:  aam.security.ROOT\_CA\_CERTIFICATE\_ALIAS
+// from spring bootstrap file:  aam.security.ROOT_CA_CERTIFICATE_ALIAS
 String rootCACertificateAlias = "";
 ```
 For those data, script will provide you with a keystore file containing the certificate required to set-up your platform AAM module.
@@ -377,7 +377,7 @@ Select option  **Standalone**  (option 2) and enter your domain name.
 
   * Upon successful execution navigate to the location:
     ```
-    /etc/letsencrypt/live/<domain\_name>/
+    /etc/letsencrypt/live/<domain_name>/
     ```
 
     where you can find your certificate and private key (5 files in total, cert.pem, chain.pem, fullchain.pem, privkey.pem, README).
@@ -416,19 +416,19 @@ aam.deployment.owner.username=TODO
 aam.deployment.owner.password=TODO
 
 # name of the PAAM JavaKeyStore file you need to put in your src/main/resources directory
-aam.security.KEY\_STORE\_FILE\_NAME=TODO.p12
+aam.security.KEY_STORE_FILE_NAME=TODO.p12
 
 # name of the root ca certificate entry in the generated Symbiote Keystore
-aam.security.ROOT\_CA\_CERTIFICATE\_ALIAS=TODO
+aam.security.ROOT_CA_CERTIFICATE_ALIAS=TODO
 
 # name of the certificate entry in the generated Symbiote Keystore
-aam.security.CERTIFICATE\_ALIAS=TODO
+aam.security.CERTIFICATE_ALIAS=TODO
 
 # symbiote keystore password
-aam.security.KEY\_STORE\_PASSWORD=TODO
+aam.security.KEY_STORE_PASSWORD=TODO
 
 # symbiote certificate private key password
-aam.security.PV\_KEY\_PASSWORD=TODO
+aam.security.PV_KEY_PASSWORD=TODO
 
 #JWT validity time in milliseconds - how long the tokens issued to your users (apps) are valid... think maybe of an hour, day, week?
 aam.deployment.token.validityMillis=TODO
@@ -525,9 +525,9 @@ After our platform has been registered and symbIoTe Cloud components for our pla
 ```
 [
   {
-    "internalId": "internal\_id",
-    "pluginId": "plugin\_id
-    "cloudMonitoringHost": "cloud\_monitoring\_host\_ip",
+    "internalId": "internal_id",
+    "pluginId": "plugin_id
+    "cloudMonitoringHost": "cloud_monitoring_host_ip",
     "params": {
        "type": "Type of device, used in monitoring"
      },
@@ -604,8 +604,8 @@ It is also possible to register resources using rdf. This is done by sending _HT
   "idMappings": {
     "http://www.testcompany.eu/customPlatform/service1234": {
       "internalId": "internal1",
-      "pluginId": "plugin\_internal1",
-      "cloudMonitoringHost": "monitoring\_internal1",
+      "pluginId": "plugin_internal1",
+      "cloudMonitoringHost": "monitoring_internal1",
       "singleTokenAccessPolicy": {
         "policyType": "PUBLIC",
         "requiredClaims": {}
@@ -617,8 +617,8 @@ It is also possible to register resources using rdf. This is done by sending _HT
     },
     "http://www.testcompany.eu/customPlatform/sensor1": {
       "internalId": "internal2",
-      "pluginId": "plugin\_internal2",
-      "cloudMonitoringHost": "monitoring\_internal2",
+      "pluginId": "plugin_internal2",
+      "cloudMonitoringHost": "monitoring_internal2",
       "singleTokenAccessPolicy": {
         "policyType": "PUBLIC",
         "requiredClaims": {}
@@ -630,8 +630,8 @@ It is also possible to register resources using rdf. This is done by sending _HT
     },
     "http://www.testcompany.eu/customPlatform/actuator1": {
       "internalId": "internal3",
-      "pluginId": "plugin\_internal3",
-      "cloudMonitoringHost": "monitoring\_internal3",
+      "pluginId": "plugin_internal3",
+      "cloudMonitoringHost": "monitoring_internal3",
       "singleTokenAccessPolicy": {
         "policyType": "PUBLIC",
         "requiredClaims": {}
