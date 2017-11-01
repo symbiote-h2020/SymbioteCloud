@@ -244,8 +244,6 @@ Then, you have to provide the following details:
 - Preferable platform id (or leave empty for autogeneration)
 - Platform Name
 - Platform Description
-- Labels (Optional)
-- Comments (Optional)
 - Interworking Interface url
 - Interworking Interface information model
 - Type (i.e. Platform or Enabler)
@@ -255,6 +253,12 @@ Then, you have to provide the following details:
 Then, you will see the panel of the newly registered Platform and check its details by clicking on its header.
 
 ![Platform Details](https://github.com/symbiote-h2020/SymbioteCloud/raw/master/resources/figures/platform_details.png "Platform Details")
+
+You can also download platform configuration files by clicking on the ***Get Configuration*** button and enter some details.
+By doing so, you can download a ***.zip*** folder containing platform configuration properties, which can simplify the 
+components' configuration process.
+
+![Get Platform Configuration](https://github.com/symbiote-h2020/SymbioteCloud/raw/master/resources/figures/get_platform_configuration.png "Get Platform Configuration")
 
 If you want to use another information model, not currently available in the symbIoTe Core, then you can upload your own information model. To do so, go to the **_Information Model_** panel and click on the **_Register New Information Model_** button.
 
@@ -290,23 +294,39 @@ A PIM is an OWL2 ontology with some special characteristics:
 
 ### 2.3 Configuration of the symbIoTe Cloud components
 
-Before starting symbIoTe Cloud components we need to provide proper configuration in the _CloudConfigProperties_ component. Please edit _application.properties_ file contained in this component and provide the following information:
-
+Before starting symbIoTe Cloud components we need to provide proper configuration in the CloudConfigProperties component 
+and to be more precise the  application.properties file contained in this component. If you have downloaded the ***.zip***
+containing the configuration files, then you can just replace it with file contained in the CloudConfigProperties folder.
+Otherwise, you will have to edit it yourselves providing the following information:
 ```
+#################################################################
+## Platform config
+#################################################################
+ 
+platform.id=<TODO set properly>
+ 
+#################################################################
+## AMQP config
+#################################################################
+ 
 rabbit.host=<TODO set properly>
 rabbit.username=<TODO set properly (e.g. guest for localhost)>
 rabbit.password=<TODO set properly (e.g. guest for localhost)>
-
-platform.id=<TODO set properly>
-
-symbIoTe.coreaam.url=<TODO set properly (format: https://{CoreInterfaceHost}:8100/coreInterface/v1)>
-symbIoTe.core.cloud.interface.url=<TODO set properly (format: https://{CoreInterfaceHost}:8101/cloudCoreInterface/v1)>
-
-symbIoTe.interworking.interface.url=<TODO set properly (format: http://{nginxIp}:8102/cloudCoreInterface/v1 e.g. http://localhost:8102/cloudCoreInterface/v1)>
-symbIoTe.localaam.url=<TODO set properly (format: https://{CoreInterfaceHost}:8100/coreInterface/v1 if you do not want to always use your local AAM)>
+ 
+#################################################################
+## SymbIoTe Security Config
+#################################################################
+ 
+symbIoTe.core.interface.url=<TODO set properly (format: https://{CoreInterfaceHost}:8100/coreInterface/v1)>
+symbIoTe.core.cloud.interface.url=<TODO set properly (format: https://{CloudCoreInterfaceHost}:8101/cloudCoreInterface/v1)>
+  
+symbIoTe.interworking.interface.url=<TODO set properly (format: http://{HostName}:{nginx_port}/cloudCoreInterface/v1 e.g. http://mysymbiote:8102/cloudCoreInterface/v1)>
+symbIoTe.localaam.url=<TODO set properly (format: https://{HostName}:{nginx_port}/paam needed to initialize your components use your local AAM e.g. https://mysymbiote.com:8102/paam>
 ```
 
-Also, there are some component-specific configurations that need to be applied in each cloud component's **bootstrap.properties** file. They are also marked with ***TODO***.
+Also, there are some component-specific configurations that need to be applied in each cloud component's 
+***bootstrap.properties*** file. They are also marked with ***TODO***.  You can also find them in the **.zip** under the respective 
+component's folder.
 
 _Hint: Some people like to run the same jar on different machines (think development vs. production here). This often means different settings for the different machines._
 
@@ -319,11 +339,14 @@ _In this case having a bootstrap.properties file WITHIN the jar is not convenien
 
 Once a platform instance is registered through Administration module, the Platform owner should generate himself a symbiote intermediate certification authority keystore for the PAAM.
 
-For that please use the  [PlatformAAMCertificateKeystoreFactory](https://github.com/symbiote-h2020/SymbIoTeSecurity/blob/develop/src/main/java/eu/h2020/symbiote/security/helpers/PlatformAAMCertificateKeyStoreFactory.java) (available in SymbioTeSecurity module). You need to checkout the code, modify the parameters in the main method and after running it, it will generate the keystore that you can copy to your platform AAM deployment.
-
+For that please use the  [PlatformAAMCertificateKeystoreFactory](https://github.com/symbiote-h2020/SymbIoTeSecurity/blob/develop/src/main/java/eu/h2020/symbiote/security/helpers/PlatformAAMCertificateKeyStoreFactory.java) 
+(available in SymbioTeSecurity module). You need to checkout the code, modify the parameters in the main method and 
+after running it, it will generate the keystore that you can copy to your platform AAM deployment. If you have downloaded
+the **.zip** with the configuration files, you can find the *PlatformAAMCertificateKeystoreFactory* configured in the 
+*SymbIoTeSecurity* folder.
 ```
 // from spring bootstrap file: symbiote.coreaam.url
-String coreAAMAddress = "";
+String coreAAMAddress = "";   
 
 // the user registered through administration in the Symbiote Core
 String platformOwnerUsername = "";
@@ -404,7 +427,9 @@ If you do not want to use KeyStore Explorer find some helpful resources below:
 
 #### 2.4.3 Configuring the Platform AAM resources
 
-Once one has done previous actions, you need to fix the file `src/main/resources/bootstrap.properties` manually for each deployment using the template below or comments from the file itself.
+Once one has done previous actions, you need to fix the file `src/main/resources/bootstrap.properties`. If you have 
+downloaded the .zip with the configuration files, you can use the bootstrap.properties file inside the AAM folder. 
+Otherwise, you have to edit manually for each deployment using the template below or comments from the file itself.
 
 ```
 spring.cloud.config.enabled=true
