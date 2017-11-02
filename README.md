@@ -345,28 +345,23 @@ after running it, it will generate the keystore that you can copy to your platfo
 the **.zip** with the configuration files, you can find the *PlatformAAMCertificateKeystoreFactory* configured in the 
 *SymbIoTeSecurity* folder.
 ```
-// from spring bootstrap file: symbiote.coreaam.url
-String coreAAMAddress = "";   
-
-// the user registered through administration in the Symbiote Core
+// from spring bootstrap file: symbIoTe.core.interface.url
+String coreAAMAddress = "";
+// of the user registered through administration in the symbIoTe Core
 String platformOwnerUsername = "";
 String platformOwnerPassword = "";
-
-// of the platform instance registered to the given platform Owner
+// of the platform registered to the given platform Owner
 String platformId = "";
 
-// where you want to have the keystore generated
-String keyStorePath = "";
-
+// how the generated keystore should be named
+String keyStoreFileName = "";
 // used to access the keystore. MUST NOT be longer than 7 chars
 // from spring bootstrap file: aam.security.KEY_STORE_PASSWORD
-// Further more as the Java security package is working totally against the API - ignores the privateKeyPassword. - IT MUST BE THE SAME as spring bootstrap file: aam.security.PV_KEY_PASSWORD
+// R3 dirty fix MUST BE THE SAME as spring bootstrap file: aam.security.PV_KEY_PASSWORD
 String keyStorePassword = "";
-
 // platform AAM key/certificate alias... case INSENSITIVE (all lowercase)
 // from spring bootstrap file: aam.security.CERTIFICATE_ALIAS
 String aamCertificateAlias = "";
-
 // root CA certificate alias... case INSENSITIVE (all lowercase)
 // from spring bootstrap file:  aam.security.ROOT_CA_CERTIFICATE_ALIAS
 String rootCACertificateAlias = "";
