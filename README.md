@@ -195,7 +195,7 @@ The notifications mechanism follows a different flow than the direct resource ac
 
 2) Notifications should be sent from platform plugin to generic RAP to exchange _symbIoTe.rapPluginExchange-notification_ with a routing key _symbIoTe.rapPluginExchange.plugin-notification._
 
-All returned messages from read accesses (GET, HISTORY and notifications) are modeled as an instance of _eu.h2020.symbiote.core.model.Observation class_, e.g.:
+All returned messages from read accesses (GET, HISTORY and notifications) are modeled as an instance of _eu.h2020.symbiote.model.cim.Observation class_, e.g.:
 
 ```
 [
@@ -540,7 +540,7 @@ java -jar build/libs/{Component}
 
 ### 2.6 Register resources
 
-After our platform has been registered and symbIoTe Cloud components for our platform are configured and are running, we can proceed to expose some of our platform&#39;s resources to symbIoTe Core. List of properties that are supported in the description in Release 1.0.0 can be found here: [List of properties supported in R2 (BIM + imported models)](file:///colab/pages/viewpage.action%3FpageId=10092548). This is done by sending _HTTP POST_ request containing resource description on _RegistrationHandler&#39;s_ registration endpoint (i.e. [http://myplatform.eu:8102/rh/resources](http://myplatform.eu:8101/)). Exemplary description is shown below:
+After our platform has been registered and symbIoTe Cloud components for our platform are configured and are running, we can proceed to expose some of our platform&#39;s resources to symbIoTe Core. List of properties that are supported in the description in Release 1.1.0 can be found here: [List of properties supported in R2 (BIM + imported models)](file:///colab/pages/viewpage.action%3FpageId=10092548). This is done by sending _HTTP POST_ request containing resource description on _RegistrationHandler&#39;s_ registration endpoint (i.e. [http://myplatform.eu:8102/rh/resources](http://myplatform.eu:8101/)). Exemplary description is shown below:
 
 ```
 [
@@ -552,17 +552,19 @@ After our platform has been registered and symbIoTe Cloud components for our pla
        "type": "Type of device, used in monitoring"
      },
     "singleTokenAccessPolicy": {
-      "policyType": "SLHTAP",
+      "policyType": "PUBLIC",
       "requiredClaims": {
-        "iss": "id of the home platform"
+      }
+    },
+    "singleTokenFilteringPolicy": {
+      "policyType": "PUBLIC",
+      "requiredClaims": {
       }
     },
     "resource": {
       "@c": ".StationarySensor",
-      "labels": [
-        "FER33UXP0547"
-      ],
-      "comments": [
+      "name": "FER33UXP0547",
+      "description": [
         "Virtual sensor based on the MGRS cell"
       ],
       "interworkingServiceURL": "https://symbiote.tel.fer.hr",
@@ -571,18 +573,14 @@ After our platform has been registered and symbIoTe Cloud components for our pla
         "longitude": 16.414937973022,
         "latitude": 48.267498016357,
         "altitude": 215,
-        "name": [
-          "Vienna"
-        ],
+        "name": "Vienna",
         "description": [
           "Vienna, Austria"
         ]
       },
       "featureOfInterest": {
-        "labels": [
-          "FER33UXP0547"
-        ],
-        "comments": [
+        "name": "FER33UXP0547",
+        "description": [
           "MGRS cell"
         ],
         "hasProperty": [
@@ -611,7 +609,8 @@ The main fields of a CloudResource description is the following:
 - *pluginId*: the id of the rap plugin which serves this resource. If there is just one plugin, it can be ommitted
 - *cloudMonitoringHost*: the ip address of the Icinga Monitoring Host
 - *params*: the cloud monitoring parameters
-- *singleTokenAccessPolicy*: the [access policy spcifier](https://github.com/symbiote-h2020/SymbIoTeSecurity/blob/master/src/main/java/eu/h2020/symbiote/security/accesspolicies/common/singletoken/SingleTokenAccessPolicySpecifier.java) which is propagated to the RAP. For the moment, there are specific access policies provided by the symbIoTe framework
+- *singleTokenAccessPolicy*: the [access policy specifier](https://github.com/symbiote-h2020/SymbIoTeSecurity/blob/master/src/main/java/eu/h2020/symbiote/security/accesspolicies/common/singletoken/SingleTokenAccessPolicySpecifier.java) which is propagated to the RAP. For the moment, there are specific access policies provided by the symbIoTe framework
+- *singleTokenFilteringPolicy*: same as above, just this is related to filtering policies and is used during Core search for the resources; resource is returned in the search queries only for users with specific filtering policies
 - *resource*: the resource description supported in the [symbIoTe Core](https://github.com/symbiote-h2020/SymbIoTeLibraries/tree/master/src/main/java/eu/h2020/symbiote/core/model/resources)
 
 ##### NOTE:
@@ -630,6 +629,10 @@ It is also possible to register resources using rdf. This is done by sending _HT
         "policyType": "PUBLIC",
         "requiredClaims": {}
       },
+      "singleTokenFilteringPolicy": {
+        "policyType": "PUBLIC",
+        "requiredClaims": {}
+      },
       "resource": null,
       "params": {
         "type": "Actuator"
@@ -640,6 +643,10 @@ It is also possible to register resources using rdf. This is done by sending _HT
       "pluginId": "plugin_internal2",
       "cloudMonitoringHost": "monitoring_internal2",
       "singleTokenAccessPolicy": {
+        "policyType": "PUBLIC",
+        "requiredClaims": {}
+      },
+      "singleTokenFilteringPolicy": {
         "policyType": "PUBLIC",
         "requiredClaims": {}
       },
@@ -656,6 +663,10 @@ It is also possible to register resources using rdf. This is done by sending _HT
         "policyType": "PUBLIC",
         "requiredClaims": {}
       },
+      "singleTokenFilteringPolicy": {
+        "policyType": "PUBLIC",
+        "requiredClaims": {}
+      },
       "resource": null,
       "params": {
         "type": "Actuator"
@@ -663,7 +674,7 @@ It is also possible to register resources using rdf. This is done by sending _HT
     }
   },
   "rdfInfo": {
-    "rdf": "some rdf",
+    "rdf": "insert rdf containing your resources",
     "rdfFormat": "NTriples"
   }
 }
@@ -672,7 +683,7 @@ It is also possible to register resources using rdf. This is done by sending _HT
 The request contains the following:
 
 - *idMappings*: a map which has as keys the RDF id of the resource and as values the CloudResource description (as in the resource registration using plain json)
-- *rdfInfo*: contains the consolidated rdf description of all the resources and specifies the rdfFormat. Accepted format can be found [here](https://github.com/symbiote-h2020/SymbIoTeLibraries/blob/master/src/main/java/eu/h2020/symbiote/core/model/RDFFormat.java)
+- *rdfInfo*: contains the consolidated rdf description of all the resources and specifies the rdfFormat. Accepted formats can be found [here](https://github.com/symbiote-h2020/SymbIoTeLibraries/blob/master/src/main/java/eu/h2020/symbiote/core/model/RDFFormat.java)
 
 ### 2.7 Update resources
 
@@ -719,6 +730,7 @@ Query parameters {
          max_distance:          Integer
          observed_property:     List<String>
          resource_type:         String
+         should_rank:           Boolean
 }
 ```
 
@@ -732,6 +744,8 @@ Query parameters {
 - description
 - location_name
 - observed_property
+
+**_NOTE 3:_**  *should_rank* parameter can be set to enable ranking of the resources from the response. This allows currently available and popular resources to be returned with higher ranking than others. Also if geolocation point is used in the query resources closer to the point of interest are returned with higher ranking.
 
 For our example lets search for resources with name _Stationary 1_. We do it by sending a  _HTTP GET_ request on symbIoTe Core Interface ( [https://core.symbiote.eu:8100/coreInterface/v1/query?name=Stationary 1](http://core.symbiote.eu:8100/coreInterface/v1/query)). Response contains a list of resources fulfilling the criteria:
 
