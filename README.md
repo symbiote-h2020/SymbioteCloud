@@ -933,3 +933,226 @@ To subscribe (or unsubscribe) to resources you have to send a message to the Web
 ```
 Afterwards notifications will be automatically received by the application from the WebSocket.
 
+
+# 4 Resource Description Examples
+Below you can find some examples for describing various kind of resources
+
+## 4.1 JSON Description Examples
+* ***Stationary Sensor*** :
+```
+{
+  "@c": ".StationarySensor",
+  "name": "Stationary 1",
+  "description": [
+    "This is stationary 1"
+  ],
+  "interworkingServiceURL": "https://www.example.com/Test1Platform",
+  "locatedAt": {
+    "@c": ".WGS84Location",
+    "longitude": 5.349014,
+    "latitude": 25.864716,
+    "altitude": 35,
+    "name": "SomeLocation",
+    "description": [
+    	"Secret location"
+	]
+  },
+  "featureOfInterest": {
+    "name": "Room1",
+    "description": [
+      "This is room 1"
+    ],
+    "hasProperty": [
+      "temperature"
+    ]
+  },
+  "observesProperty": [
+    "temperature",
+    "humidity"
+  ]
+}
+```
+* ***Actuator*** :
+```
+{
+  "@c": ".Actuator",
+  "name": "Actuator 1",
+  "description": [
+    "This is actuator 1"
+  ],
+  "services": null,
+  "capabilites": [
+    {
+      "parameters": [
+        {
+          "name": "inputParam1",
+          "mandatory": true,
+          "restrictions": [
+            {
+              "@c": ".RangeRestriction",
+              "min": 2,
+              "max": 10
+            }
+          ],
+          "datatype": {
+            "@c": ".PrimitiveDatatype",
+            "isArray": false,
+            "baseDatatype": "http:\/\/www.w3.org\/2001\/XMLSchema#string"
+          }
+        }
+      ],
+      "effects": [
+        {
+          "actsOn": {
+            "name": "Room1",
+            "description": [
+              "This is room 1"
+            ],
+            "hasProperty": [
+              "temperature"
+            ]
+          },
+          "affects": [
+            "temperature",
+            "humidity"
+          ]
+        }
+      ]
+    }
+  ],
+  "locatedAt": {
+    "@c": ".WGS84Location",
+    "longitude": 2.349014,
+    "latitude": 48.864716,
+    "altitude": 15,
+    "name": "Paris",
+    "description": [
+      "This is paris"
+    ]
+  },
+  "interworkingServiceURL": "https://www.example.com/Test1Platform"
+}
+```
+* ***Service*** :
+```
+{
+  "@c": ".Service",
+  "name": "Service 1",
+  "description": [
+    "This is service 1"
+  ],
+  "interworkingServiceURL": "https://www.example.com/Test1Platform",
+  "name": "service1Name",
+  "resultType": {
+    "@c": ".RdfsDatatype",
+    "array": false,
+    "isArray": false,
+    "datatypeName": "http:\/\/www.w3.org\/2001\/XMLSchema#string"
+  },
+  "parameters": [
+    {
+      "name": "inputParam1",
+      "mandatory": true,
+      "restrictions": [
+        {
+          "@c": ".RangeRestriction",
+          "min": 2,
+          "max": 10
+        }
+      ],
+      "datatype": {
+        "@c": ".PrimitiveDatatype",
+        "isArray": false,
+        "baseDatatype": "http:\/\/www.w3.org\/2001\/XMLSchema#string"
+      }
+    }
+  ]
+}
+```
+* ***Mobile Sensor*** :
+```
+{
+  "@c": ".MobileSensor",
+  "name": "Mobile 1",
+  "description": [
+    "This is mobile 1"
+  ],
+  "interworkingServiceURL": "https://www.example.com/Test1Platform",
+  "locatedAt": {
+    "@c": ".WGS84Location",
+    "longitude": 2.349014,
+    "latitude": 48.864716,
+    "altitude": 15,
+    "name": "Paris",
+    "description": [
+      "This is paris"
+    ]
+  },
+  "services": null,
+  "observesProperty": [
+    "temperature"
+  ]
+}
+```
+
+## 4.2 RDF Description Examples
+```
+@prefix : <http://nextworks.com/ontology/resource#> .
+@prefix nxw-location: <http://nextworks.com/ontology/location#> .
+@prefix nxw-foi: <http://nextworks.com/ontology/foi#> .
+@prefix geo:   <http://www.w3.org/2003/01/geo/wgs84_pos#> .
+@prefix core:  <http://www.symbiote-h2020.eu/ontology/core#> .
+@prefix qu:    <http://purl.oclc.org/NET/ssnx/qu/quantity#> .
+@prefix owl:   <http://www.w3.org/2002/07/owl#> .
+@prefix rdf:   <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix meta:  <http://www.symbiote-h2020.eu/ontology/meta#> .
+@prefix xsd:   <http://www.w3.org/2001/XMLSchema#> .
+@prefix rdfs:  <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix bim: <http://www.symbiote-h2020.eu/ontology/bim#> .
+@prefix bim-sr: <http://www.symbiote-h2020.eu/ontology/bim/smartresidence#> .
+@base <http://nextworks.com/ontology/resource#> .
+:nxw-Light1
+        a                   bim-sr:Light ;
+        a                   owl:NamedIndividual ;
+        a                   core:FeatureOfInterest ;
+        core:description        "Light sensor 1" ;
+        core:name          "NXW Light 1" ;
+        core:locatedAt      nxw-location:Location1 ;
+        core:hasCapability  [ a                  bim-sr:OnOffCapabililty ;
+                              core:hasEffect     [ a                          bim-sr:OnOffEffect ;
+                                                   core:actsOn :nxw-Light1
+                                                 ] ;
+                              core:hasEffect     [ a                    core:Effect ;
+                                                   core:actsOn nxw-foi:nxw-Room1 ;
+                                                   core:affects qu:humidity , qu:temperature
+                                                 ]
+                            ] ;
+        core:hasCapability  [ a                  bim-sr:DimmerCapability ;
+                              core:hasEffect     [ a                          bim-sr:DimmerEffect ;
+                                                   core:actsOn nxw-foi:nxw-Room1
+                                                 ] ;
+                            ] ;
+        core:hasCapability  [ a                  bim-sr:RGBCapability ;
+                              core:hasEffect     [ a                          bim-sr:RGBEffect ;
+                                                   core:actsOn :nxw-Light1
+                                                 ] ;
+                              core:hasEffect     [ a                    core:Effect ;
+                                                   core:actsOn nxw-foi:nxw-Room1 ;
+                                                   core:affects qu:illuminance
+                                                 ]
+                            ] ;
+        core:observesProperty  qu:illuminance.
+
+nxw-location:Location1
+        a             core:WGS84Location ;
+        core:description  "Location of first deployment nxw" ;
+        core:name    "Pisa" ;
+        geo:alt       "15.0" ;
+        geo:lat       "43.720663784" ;
+        geo:long      "10.389831774" .
+nxw-foi:nxw-Room1
+        a                   core:FeatureOfInterest ;
+        core:description        "Light sensor 1" ;
+        core:name          "NXW Light 1" ;
+        core:hasProperty    qu:humidity , qu:temperature, qu:illuminance .
+```
