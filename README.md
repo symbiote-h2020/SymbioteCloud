@@ -477,7 +477,7 @@ You also need to copy to the `src/main/resources/` directory:
 
 Build the AAM module using command:
 ```
-gradle assemble
+gradle assemble --refresh-dependencies
 ```
 and run the Platform AAM jar as any other Symbiote component
 
