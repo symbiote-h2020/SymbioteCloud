@@ -529,12 +529,13 @@ Starting symbIoTe Cloud components can be done in following steps:
 4. Start Icinga 2
 5. Start symbIoTe Cloud components
    1. make sure to first start _CloudConfigService_, and after it is running start _EurekaService_
-   2. after both services are running you can start rest of the components: _ZipkinService, RegistrationHandler, ResourceAccessProxy, AuthenticationAuthorizationManager, Monitoring_
+   2. after both services are running you can start the _AuthenticationAuthorizationManager_
+   3. finally, after _AuthenticationAuthorizationManager_ is running you can start rest of the components: _ZipkinService, RegistrationHandler, ResourceAccessProxy, , Monitoring_
 
 To build and run the components you can issue:
 
 ```
-gradle assemble
+gradle assemble --refresh-depedencies
 java -jar build/libs/{Component}
 ```
 
