@@ -15,7 +15,7 @@ Platform components require the following tools to be installed:
 - [Nginx](https://www.nginx.com/resources/admin-guide/installing-nginx-open-source/) - represents Interworking Interface/Interworking Service component of the architecture, and is used for redirecting requests from and to platform components
   - Nginx needs to be configured so that it redirects correctly to the various components.  (more instructions [here](http://nginx.org/en/docs/beginners_guide.html)). This can be done by the placing the following [nginx.conf](https://github.com/symbiote-h2020/SymbioteCloud/blob/master/resources/conf/nginx.conf) in `/usr/local/nginx/conf`, `/etc/nginx`, or `/usr/local/etc/nginx`. (If there are issues, it may be better to simply copy the `server {...}` part in the default config file in `/etc/nginx/nginx.conf` (in Ubuntu/Debian)
 
-  - By using the configuration above, your Nginx will listen on port 8102 (https). To enable https (ssl) you need to provide certificate for your machine, which is also required in later steps (more precisely, in step 2.4.1, set-up of PAAM), so the same certificate can be re-used. When you obtain the certificate (using the certbot tool) copy them to the location: `/etc/nginx/ssl/` (you will need to create the _ssl_ folder). Location can be different, but the nginx process needs access to it.
+  - By using the configuration above, your Nginx will listen on port 443 (https). To enable https (ssl) you need to provide certificate for your machine, which is also required in later steps (more precisely, in step 2.4.1, set-up of PAAM), so the same certificate can be re-used. When you obtain the certificate (using the certbot tool) copy them to the location: `/etc/nginx/ssl/` (you will need to create the _ssl_ folder). Location can be different, but the nginx process needs access to it. If you need to run Nginx on another port, you will need to change the nginx.conf.
 
 Besides that platform owner will need to provide a Java implementation of the platform-specific access to the resources and their readings (observations). So, some IDE for writing code and [Gradle](https://gradle.org/) (version at least 3.0) for building and running of the components is required .
 
@@ -41,14 +41,14 @@ Per default the _CloundConfigService_ expects the directory where you checked ou
 
 For the example integration process described below, we assume the following addresses of various Core and Cloud components _(NOTE: those are supposed to be changed to real addresses of Core and Cloud services during integration)_:
 
-- _Admin GUI_ http://core.symbiote.eu:8250
-- _Cloud Core Interface_ https://core.symbiote.eu:8101/cloudCoreInterface/v1
-- _Core Interface_ http://core.symbiote.eu:8100/coreInterface/v1/
-- _Registration Handler_ http://myplatform.eu:8001
-- _AuthenticationAuthorizationManager_ https://myplatform.eu:8102/paam
-- _Resource Access Proxy_ http://myplatform.eu:8100/
+- _Admin GUI_ http://{core.symbiote.eu}:8250
+- _Cloud Core Interface_ https://{core.symbiote.eu:8101}/cloudCoreInterface/v1
+- _Core Interface_ http://{core.symbiote.eu:8100}/coreInterface/v1/
+- _Registration Handler_ http://{myplatform.eu}:8001
+- _AuthenticationAuthorizationManager_ https://myplatform.eu:443/paam
+- _Resource Access Proxy_ http://myplatform.eu:443/rap
 
-**You should only expose to the internet the nginx 8102 port. All the other ports must not be exposed to the internet for security reasons.**
+**You should only expose to the internet the nginx 443 port. All the other ports must not be exposed to the internet for security reasons.**
 
 ### 1.3 SymbIoTe Java libraries
 
@@ -320,8 +320,8 @@ rabbit.password=<TODO set properly (e.g. guest for localhost)>
 symbIoTe.core.interface.url=<TODO set properly (format: https://{CoreInterfaceHost}:8100/coreInterface/v1)>
 symbIoTe.core.cloud.interface.url=<TODO set properly (format: https://{CloudCoreInterfaceHost}:8101/cloudCoreInterface/v1)>
   
-symbIoTe.interworking.interface.url=<TODO set properly (format: http://{HostName}:{nginx_port}/cloudCoreInterface/v1 e.g. http://mysymbiote:8102/cloudCoreInterface/v1)>
-symbIoTe.localaam.url=<TODO set properly (format: https://{HostName}:{nginx_port}/paam needed to initialize your components use your local AAM e.g. https://mysymbiote.com:8102/paam>
+symbIoTe.interworking.interface.url=<TODO set properly (format: http://{HostName}:{nginx_port}/cloudCoreInterface/v1 e.g. http://mysymbiote:443/cloudCoreInterface/v1)>
+symbIoTe.localaam.url=<TODO set properly (format: https://{HostName}:{nginx_port}/paam needed to initialize your components use your local AAM e.g. https://mysymbiote.com:443/paam>
 ```
 
 Also, there are some component-specific configurations that need to be applied in each cloud component's 
@@ -498,7 +498,7 @@ https://<yourPaamHostname>:<selected port>/get_component_certificate/platform/<y
 
 Verify all is ok by going to:
 ```
-https://<yourNginxHostname>:8102/paam/get_component_certificate/platform/<your_platform_id>/component/aam
+https://<yourNginxHostname>:443/paam/get_component_certificate/platform/<your_platform_id>/component/aam
 ```
 There you should see the connection green and the content is your Platform AAM instance's certificate in PEM format.
 
@@ -541,13 +541,13 @@ java -jar build/libs/{Component}
 
 ### 2.6 Register resources
 
-After our platform has been registered and symbIoTe Cloud components for our platform are configured and are running, we can proceed to expose some of our platform&#39;s resources to symbIoTe Core. List of properties that are supported in the description in Release 1.1.0 can be found here: [List of properties supported in R2 (BIM + imported models)](file:///colab/pages/viewpage.action%3FpageId=10092548). This is done by sending _HTTP POST_ request containing resource description on _RegistrationHandler&#39;s_ registration endpoint (i.e. [http://myplatform.eu:8102/rh/resources](http://myplatform.eu:8101/)). Exemplary description is shown below:
+After our platform has been registered and symbIoTe Cloud components for our platform are configured and are running, we can proceed to expose some of our platform&#39;s resources to symbIoTe Core. List of properties that are supported in the description in Release 1.1.0 can be found here: [List of properties supported in R2 (BIM + imported models)](file:///colab/pages/viewpage.action%3FpageId=10092548). This is done by sending _HTTP POST_ request containing resource description on _RegistrationHandler&#39;s_ registration endpoint (i.e. [http://myplatform.eu:443/rh/resources](http://myplatform.eu:8101/)). Exemplary description is shown below:
 
 ```
 [
   {
     "internalId": "internal_id",
-    "pluginId": "plugin_id
+    "pluginId": "plugin_id",
     "cloudMonitoringHost": "cloud_monitoring_host_ip",
     "params": {
        "type": "Type of device, used in monitoring"
@@ -607,7 +607,7 @@ After our platform has been registered and symbIoTe Cloud components for our pla
 The main fields of a CloudResource description is the following:
 
 - *internalId*: the internal (platform-specific) id of the resource that is going to be registered in the core
-- *pluginId*: the id of the rap plugin which serves this resource. If there is just one plugin, it can be ommitted
+- *pluginId*: the id of the rap plugin which serves this resource. ***OMIT*** it if there is just one plugin
 - *cloudMonitoringHost*: the ip address of the Icinga Monitoring Host
 - *params*: the cloud monitoring parameters
 - *singleTokenAccessPolicy*: the [access policy specifier](https://github.com/symbiote-h2020/SymbIoTeSecurity/blob/master/src/main/java/eu/h2020/symbiote/security/accesspolicies/common/singletoken/SingleTokenAccessPolicySpecifier.java) which is propagated to the RAP. For the moment, there are specific access policies provided by the symbIoTe framework
@@ -617,7 +617,7 @@ The main fields of a CloudResource description is the following:
 ##### NOTE:
 The _interworkingServiceURL_ of each resource should be the same with the _interworkingServiceURL_ specified during platform registration. RH uses II (i.e. nginx) to communicate with symbIoTe Core to register our platform&#39;s resource. If the registration process is successful Core returns the resource descirption containing _id_ field (i.e. symbIoTeId) with unique, generated id of the resource in the symbIoTe Core layer. Information about the registered resource is distributed in Cloud components using RabbitMQ messaging.
 
-It is also possible to register resources using rdf. This is done by sending _HTTP POST_ request containing rdf resource description on _RegistrationHandler&#39;s_ registration endpoint (i.e. [http://myplatform.eu:8102/rh/rdf-resources](http://myplatform.eu:8101/)). The body of the message should be the following:
+It is also possible to register resources using rdf. This is done by sending _HTTP POST_ request containing rdf resource description on _RegistrationHandler&#39;s_ registration endpoint (i.e. [http://myplatform.eu:443/rh/rdf-resources](http://myplatform.eu:8101/)). The body of the message should be the following:
 
 ```
 {
@@ -688,13 +688,13 @@ The request contains the following:
 
 ### 2.7 Update resources
 
-After registering resources, it is also possible to update them. To do so, you can send an _HTTP POST_ request to the same endpoint (i.e. [http://myplatform.eu:8102/rh/rdf-resources](http://myplatform.eu:8101/)) containing the same JSON payload as in the previous request. If the resource has not been registered previously, it will be automatically registered. However, it is not possible to update a resource using rdf.
+After registering resources, it is also possible to update them. To do so, you can send an _HTTP POST_ request to the same endpoint (i.e. [http://myplatform.eu:443/rh/rdf-resources](http://myplatform.eu:8101/)) containing the same JSON payload as in the previous request. If the resource has not been registered previously, it will be automatically registered. However, it is not possible to update a resource using rdf.
 
-***Hint***: If you do not do any bookkeeping of what you already registered and what not you can query the registration handler about the resources it knows. Submit a GET request to the URL regHandlerBase+"/resources (e.g. [http://myplatform.eu:8102/rh/resources](http://myplatform.eu:8101/))
+***Hint***: If you do not do any bookkeeping of what you already registered and what not you can query the registration handler about the resources it knows. Submit a GET request to the URL regHandlerBase+"/resources (e.g. [http://myplatform.eu:443/rh/resources](http://myplatform.eu:8101/))
 
 ### 2.8 Delete resources
 
-After registering resources, it is also possible to delete them. This is done by sending _HTTP DELETE_ request containing the _internal ids_ on _ResourceHandler's delete_ endpoint (e.g. https://myplatform.eu:8102/rh/resources?resourceInternalId=1600,1700).
+After registering resources, it is also possible to delete them. This is done by sending _HTTP DELETE_ request containing the _internal ids_ on _ResourceHandler's delete_ endpoint (e.g. https://myplatform.eu:443/rh/resources?resourceInternalId=1600,1700).
 
 ### 2.9 Out-of-Sync-Problem with the core
 
@@ -839,8 +839,8 @@ To access the resource we need to ask symbIoTe Core for the access link. To do s
 If we provide correct ids of the resources along with a valid security credentials in the header, we will get a response containing URLs to access the resources:
 ```
 {
-  "589dc62a9bdddb2d2a7ggab8": "https://myplatform.eu:8102/rap/Sensor(&#39;589dc62a9bdddb2d2a7ggab8&#39;)",
-  "589dc62a9bdddb2d2a7ggab9": "https://myplatform.eu:8102/rap/Sensor(&#39;589dc62a9bdddb2d2a7ggab9&#39;)"
+  "589dc62a9bdddb2d2a7ggab8": "https://myplatform.eu:443/rap/Sensor(&#39;589dc62a9bdddb2d2a7ggab8&#39;)",
+  "589dc62a9bdddb2d2a7ggab9": "https://myplatform.eu:443/rap/Sensor(&#39;589dc62a9bdddb2d2a7ggab9&#39;)"
 }
 ```
 
@@ -861,8 +861,8 @@ The applications can:
 
 ### 3.3.1 OData access
 
-1. _GET https://myplatform.eu:8102/rap/{Model}s('symbioteId')/Observations?$top=1_
-2. _GET https://myplatform.eu:8102/rap/{Model}s('symbioteId')/Observations_
+1. _GET https://myplatform.eu:443/rap/{Model}s('symbioteId')/Observations?$top=1_
+2. _GET https://myplatform.eu:443/rap/{Model}s('symbioteId')/Observations_
    Historical readings can be filtered, using the option _$filter._
    Operators supported:
    1. Equals
@@ -871,7 +871,7 @@ The applications can:
    4. Greater Than
    5. And
    6. Or
-3. _PUT_ _https://myplatform.eu:8102/rap/{Model}s('serviceId')_   
+3. _PUT_ _https://myplatform.eu:443/rap/{Model}s('serviceId')_   
     ***Request body:***   
 
     ```
@@ -894,9 +894,9 @@ The same reasoning applies for _capability, restriction_ and _value._
 
 ### 3.3.2 REST access
 
-1. _GET https://myplatform.eu:8102/rap/Sensor/{symbioteId}_
-2. _GET https://myplatform.eu:8102/rap/Sensor/{symbioteId}/history_
-3. _POST https://myplatform.eu:8102/rap/Service('symbioteId')_   
+1. _GET https://myplatform.eu:443/rap/Sensor/{symbioteId}_
+2. _GET https://myplatform.eu:443/rap/Sensor/{symbioteId}/history_
+3. _POST https://myplatform.eu:443/rap/Service('symbioteId')_   
     ***Request body:***   
     
     ```
