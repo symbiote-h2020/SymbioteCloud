@@ -23,7 +23,7 @@ Besides that platform owner will need to provide a Java implementation of the pl
 
 Platform components are available in the github, bundled in [SymbioteCloud](https://github.com/symbiote-h2020/SymbioteCloud) . You can download it using the following command:
 
-`git clone --recursive {Repository}`
+`git clone --recursive https://github.com/symbiote-h2020/SymbioteCloud.git`
 
 Master branches contain the latest stable symbIoTe release version, develop branch is a general development branch containing newest features that are added during development and particular feature branches are where new features are developed. For symbIoTe cloud installation, the following components are currently being used and required to properly start platform in L1 compliance:
 
