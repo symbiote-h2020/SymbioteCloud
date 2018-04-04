@@ -1400,7 +1400,7 @@ registration handler about the resources it knows. Submit a GET request to the U
 
 After registering resources, it is also possible to delete them. This is done by sending _HTTP DELETE_ request
 containing the_ internal ids_ on _ResourceHandler's delete_ endpoint
-(e.g. [http://localhost:8001/resources?resourceInternalId=isen1,isen2]("http://localhost:8001/resources?resourceInternalId=isen1,isen2")).
+(e.g. [http://localhost:8001/resources?resourceInternalIds=isen1,isen2]("http://localhost:8001/resources?resourceInternalId=isen1,isen2")).
 
 #### 2.8.5 Out-of-Sync-Problem with the core
 
