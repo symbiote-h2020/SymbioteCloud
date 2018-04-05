@@ -42,10 +42,10 @@ addresses of Core and Cloud services during integration)_:
 
 | Parameter                                      | URL                                                   |
 |------------------------------------------------|-------------------------------------------------------|
-| Admin GUI                                      | https://symbiote-dev.man.poznan.pl/administration     |
+| Admin GUI                                      | https://symbiote-open.man.poznan.pl/administration     |
 | AuthenticationAuthorizationManager (AAM, PAAM) | https://myplatform.eu:443/paam                        |
-| Cloud Core Interface                           | https://symbiote-dev.man.poznan.pl/cloudCoreInterface |
-| Core Interface                                 | https://symbiote-dev.man.poznan.pl/coreInterface      |
+| Cloud Core Interface                           | https://symbiote-open.man.poznan.pl/cloudCoreInterface |
+| Core Interface                                 | https://symbiote-open.man.poznan.pl/coreInterface      |
 | Registration Handler (RH)                      | https://myplatform.eu:443/rh                          |
 | Resource Access Proxy (RAP)                    | https://myplatform.eu:443/rap                         |
 
@@ -54,7 +54,7 @@ we use concrete examples with **symbiotedoc.tel.fer.hr** DNS entry.
 
 ### 1.1 Register use and configure platform in symbIoTe Core
 
-To create a platform owner user in the symbIoTe Core Admin webpage [https://symbiote-ext.man.poznan.pl/administration]("https://symbiote-ext.man.poznan.pl/administration"). During registration, you have to provide:
+To create a platform owner user in the symbIoTe Core Admin webpage [https://symbiote-open.man.poznan.pl/administration]("https://symbiote-open.man.poznan.pl/administration"). During registration, you have to provide:
 
 *   username
 *   password
@@ -321,7 +321,7 @@ Platform components require the following software to be installed:
 *   [MongoDB]("https://www.mongodb.com/") \- (latest stable, verifierd working 3.6.+) database used by cloud components.
 *   [Gradle]("https://gradle.org") \- (latest stable, verified working 4.6)
 
-### 1.3. Downloading sources
+### 1.3 Downloading sources
 Platform components are available in the github, bundled in the following directory:
 [https://github.com/symbiote-h2020/SymbioteCloud]("https://github.com/symbiote-h2020/SymbioteCloud").
 For concrete lets say that we will install everything in directory /opt/symbiote on Linux machine.
@@ -345,7 +345,7 @@ Master branches contain the latest stable symbIoTe release version, develop bran
 
 There is also another project that needs to be downloaded and set up properly, containing configuration of the symbIoTe Cloud components, which can be found in [https://github.com/symbiote-h2020/CloudConfigProperties]("https://github.com/symbiote-h2020/CloudConfigProperties"). You need to clone it locally:
 
-**Download Superproject**
+**Download Configuration Properties**
 
 ```
 $ git clone https://github.com/symbiote-h2020/CloudConfigProperties.git
@@ -421,7 +421,7 @@ them to the location: **_/etc/nginx/ssl/_** (you will need to create the _ssl_ f
 different, but the nginx process needs access to it. If you need to run Nginx on another port, you will need
 to change the **nginx.conf**.
 *   In this **nginx.conf** you have to change **{symbiote-core-hostname}** to exact name of core. In this
-case, it is **symbiote-ext.man.poznan.pl**.
+case, it is **symbiote-open.man.poznan.pl**.
 
 Start nginx and open browser on [https://symbiotedoc.tel.fer.hr]("https://symbiotedoc.tel.fer.hr"). 
 Nginx should return response. This means that nginx is started and that certificates are OK.
@@ -465,7 +465,7 @@ After that you need to stop (ctrl-c) and start again ngrok and register new URL 
 ##### 2.1.2.2 Updating platform registration
 
 Go to symbIoTe Core Admin webpage
-[https://symbiote-ext.man.poznan.pl/administration]("https://symbiote-ext.man.poznan.pl/administration"),
+[https://symbiote-open.man.poznan.pl/administration]("https://symbiote-open.man.poznan.pl/administration"),
 login, click on platform details. On platform click on update button. Fill in **Interworking Services** to
 have value what you got from ngrok. Here is an
 ![Update Platform](https://github.com/symbiote-h2020/SymbioteCloud/raw/master/resources/figures/update_platform_hackathon.png "Update Platform")
@@ -483,7 +483,7 @@ requests from and to cloud components.
      `/usr/local/nginx/conf`, `/etc/nginx`, or `/usr/local/etc/nginx.`  
        
 *   In this **nginx.conf** you have to change **{symbiote-core-hostname}** to exact name of core. In this
-    case it is **symbiote-ext.man.poznan.pl**.
+    case it is **symbiote-open.man.poznan.pl**.
 
 Start nginx and open browser on [https://b2cb3e08.ngrok.io]("https://b2cb3e08.ngrok.io"). nginx should return response. This means that nginx is started and that tunnel is working.
 
@@ -651,8 +651,8 @@ rabbit.password=guest
 ## SymbIoTe Security Config
 #################################################################
 
-symbIoTe.core.interface.url=https://symbiote-ext.man.poznan.pl/coreInterface
-symbIoTe.core.cloud.interface.url=https://symbiote-ext.man.poznan.pl/cloudCoreInterface
+symbIoTe.core.interface.url=https://symbiote-open.man.poznan.pl/coreInterface
+symbIoTe.core.cloud.interface.url=https://symbiote-open.man.poznan.pl/cloudCoreInterface
  
 # production
 symbIoTe.interworking.interface.url=https://symbiotedoc.tel.fer.hr/cloudCoreInterface 
@@ -712,7 +712,7 @@ For our concrete example here is that file:
 
 ```
 # From CloudConfigProperties application.properties file: symbIoTe.core.interface.url
-coreAAMAddress=https://symbiote-ext.man.poznan.pl/coreInterface
+coreAAMAddress=https://symbiote-open.man.poznan.pl/coreInterface
     
 # The user registered through administration in the symbIoTe Core
 serviceOwnerUsername=mytest
@@ -1566,7 +1566,7 @@ MutualAuthenticationHelper.isServiceResponseVerified(serviceResponse,
 #### 3.2.1 Searching by configurable query
 
 To search for resource we need to create a query to the symbIoTe Core. In our example we use
-[https://symbiote-ext.man.poznan.pl/coreInterface/query]("https://symbiote-ext.man.poznan.pl/coreInterface/query") 
+[https://symbiote-open.man.poznan.pl/coreInterface/query]("https://symbiote-open.man.poznan.pl/coreInterface/query") 
 endpoint and provide parameters for querying. Requests need properly generated security headers. 
 More on topic of secure access to symbIoTe component can be read on SymbIoTeSecurity project page
 [https://github.com/symbiote-h2020/SymbIoTeSecurity]("https://github.com/symbiote-h2020/SymbIoTeSecurity"). 
@@ -1586,7 +1586,7 @@ Query parameters {
          location_long:         Double
          max_distance:          Integer
          observed_property:     List<String>
-         resource_type: 		String
+         resource_type:         String
          should_rank:           Boolean
 }
 ```
@@ -1616,7 +1616,7 @@ geolocation point is used in the query resources closer to the point of interest
 ranking.
 
 For our example, let's search for resources with name _Stationary 1_. We do it by sending a  _HTTP GET_
-request on symbIoTe Core Interface ([https://symbiote-ext.man.poznan.pl/coreInterface/query?name=Stationary1]("http://symbiote-ext.man.poznan.pl/coreInterface/query?name=Stationary1")). Response contains a list of resources fulfilling the criteria:
+request on symbIoTe Core Interface ([https://symbiote-open.man.poznan.pl/coreInterface/query?name=Stationary1]("http://symbiote-open.man.poznan.pl/coreInterface/query?name=Stationary1")). Response contains a list of resources fulfilling the criteria:
 
 ```
 {
@@ -1650,7 +1650,7 @@ request on symbIoTe Core Interface ([https://symbiote-ext.man.poznan.pl/coreInte
 
 Starting with Release 0.2.1, an additional endpoint was created to allow sending SPARQL queries to symbIoTe
 Core. To send SPARQL requests we need to send request by using _HTTP POST_ to the url:   
-`https://symbiote-ext.man.poznan.pl/coreInterface/sparqlQuery`
+`https://symbiote-open.man.poznan.pl/coreInterface/sparqlQuery`
 
 The endpoint accepts the following payload:
 ```
@@ -1712,11 +1712,11 @@ returns the following output:
 
 To access the resource we need to ask symbIoTe Core for the access link. To do so we need to send _HTTP GET_
 request on:    
-`https://symbiote-ext.man.poznan.pl/coreInterface/resourceUrls`    
+`https://symbiote-open.man.poznan.pl/coreInterface/resourceUrls`    
 , with ids of the resources as parameters. For our example we want urls of 2 resources,
 so request looks like: 
 
-`https://symbiote-ext.man.poznan.pl/coreInterface/resourceUrls?id=589dc62a9bdddb2d2a7ggab8,589dc62a9bdddb2d2a7ggab9`.      
+`https://symbiote-open.man.poznan.pl/coreInterface/resourceUrls?id=589dc62a9bdddb2d2a7ggab8,589dc62a9bdddb2d2a7ggab9`.      
 To access the endpoint we need to specify security headers, as described in 
 [SymbIoTeSecurity](https://github.com/symbiote-h2020/SymbIoTeSecurity).
 
@@ -1946,9 +1946,9 @@ _eu.h2020.symbiote.model.cim.Observation_ class, is the following:
 ]
 ```
 
-## 4. Creating RAP plugin
+## 4 Creating RAP plugin
 
-### 4.1. Customizing internal RAP plugin
+### 4.1 Customizing internal RAP plugin
 
 RAP internal plugin is registered under pluginId with value **platform_01** and that can not be changed.
 All resources need to have in registration pluginId and if you use internal one please use this value.
@@ -2297,7 +2297,7 @@ _false_.
 The concrete code just writes parsed parameters (*lines 84-91*) and returns an example of JSON back to RAP
 client (*line 94*). The result will be returned in the form of JSON string.
 
-### 4.2. Using RAP plugin starter
+### 4.2 Using RAP plugin starter
 
 The idea of RAP Plugin Starter is to use it as dependency in implementation that connects platform with
 SymbIoTe RAP service. Generic parts like RabbitMQ communication with RAP component is implemented in RAP
@@ -2306,7 +2306,7 @@ Plugin Starter library. That way a developer does not have to implement complex 
 All instructions regarding how to create RAP Plugin with RAP Plugin starter are
 [here]("https://github.com/symbiote-h2020/ResourceAccessProxyPluginStarter"). The example of whole project is in [this repository]("https://github.com/symbiote-h2020/RapPluginExample").
 
-### 4.3. Creating RAP plugin in other languages
+### 4.3 Creating RAP plugin in other languages
 
 At the beginning, the platform plugin application has to register to the generic RAP, sending a message to
 exchange _symbIoTe.rapPluginExchange_ with key _symbIoTe.rapPluginExchange.add-plugin_, with some information
