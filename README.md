@@ -779,7 +779,7 @@ aam.deployment.owner.username=TODO
 aam.deployment.owner.password=TODO
 
 # name of the PAAM JavaKeyStore file you you generated with helper
-aam.security.KEY\_STORE\_FILE_NAME=file://TODO.p12
+aam.security.KEY\_STORE\_FILE_NAME=file:///TODO.p12
 
 # name of the root ca certificate entry in the generated Symbiote Keystore
 aam.security.ROOT\_CA\_CERTIFICATE_ALIAS=TODO
