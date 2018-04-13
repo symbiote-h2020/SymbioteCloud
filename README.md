@@ -674,7 +674,13 @@ using SymbIoTeSecurity.
 
 1.  Open [https://jitpack.io/#symbiote-h2020/SymbIoTeSecurity]("https://jitpack.io/#symbiote-h2020/SymbIoTeSecurity")
 2.  At the time of writhing this document latest release is e.g. 25.1.0
-3.  Download JAR from link that is release dependent e.g. [https://jitpack.io/com/github/symbiote-h2020/SymbIoTeSecurity/25.1.0/SymbIoTeSecurity-25.1.0-helper.jar]("https://jitpack.io/com/github/symbiote-h2020/SymbIoTeSecurity/25.1.0/SymbIoTeSecurity-25.1.0.jar") 
+3.  Download JAR from link that is release dependent e.g. [https://jitpack.io/com/github/symbiote-h2020/SymbIoTeSecurity/25.1.0/SymbIoTeSecurity-25.1.0-helper.jar]("https://jitpack.io/com/github/symbiote-h2020/SymbIoTeSecurity/25.1.0/SymbIoTeSecurity-25.1.0.jar"). In case you experience the following error:    
+`JCE cannot authenticate the provider BC`     
+you can do the following:      
+    *   edit `jre/lib/security/java.security` to add the BC security provider.    
+    e.g. `security.provider.{x}=org.bouncycastle.jce.provider.BouncyCastleProvider`     
+    , where _x_ the first available index of the security providers
+    *   download the appropriate ***.jar*** from [here](https://www.bouncycastle.org/latest_releases.html) and move it to `jre/lib/ext`
 4.  If you have [downloaded](https://github.com/symbiote-h2020/SymbioteCloud/blob/master/README.md#113-getting-all-configuration-files-in-one-zip-optional)
     from the Administration the **.zip** containing the configuration files, then you can use the **cert.properties** file contained
     in the _AuthenticationAuthorizationManager_ folder.  Otherwise, you will have to create it yourselves with
