@@ -19,3 +19,12 @@
 [submodule "AuthenticationAuthorizationManager"]
 	path = AuthenticationAuthorizationManager
 	url = https://github.com/symbiote-h2020/AuthenticationAuthorizationManager.git
+[submodule "PlatformRegistry"]
+	path = PlatformRegistry
+	url = https://github.com/symbiote-h2020/PlatformRegistry.git
+[submodule "FederationManager"]
+	path = FederationManager
+	url = https://github.com/symbiote-h2020/FederationManager.git
+[submodule "SubscriptionManager"]
+	path = SubscriptionManager
+	url = https://github.com/symbiote-h2020/SubscriptionManager.git
