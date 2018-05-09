@@ -167,6 +167,11 @@ startScreen() {
 }
 
 stopScreen() {
+    # get screen pid
+    SCREEN_PID=`screen -ls | grep $symbioteCloudName | awk '/\.\w*\t/ {print strtonum($1)}'`
+    # kill all proceses that has parent screen pid 
+    for i in `ps -xao pid,ppid,command | grep $SCREEN_PID | grep java | awk '{ print $1 }'`; do kill -9 $i; done
+    # kill screen
     screen -X -S $symbioteCloudName quit
 }
 
@@ -239,5 +244,5 @@ case "$1" in
     echo "  src_download - Download SymbIoTe Cloud components from github repositories and create jars"
     echo "  configure - Configure SymbIoTe Cloud components from configuration.zip"
     echo "  configure_debug - Configure SymbIoTe Cloud components from configuration.zip"
-    echo "  clear_keystores - Deletes keystores in SymbIoTe Cloud components"
+    echo "  clear_keystores - Deletes keystores in SymbIoTe Cloud components. After that run configure command again."
 esac
