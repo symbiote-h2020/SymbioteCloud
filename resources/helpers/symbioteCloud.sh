@@ -167,6 +167,11 @@ startScreen() {
 }
 
 stopScreen() {
+    # get screen pid
+    SCREEN_PID=`screen -ls | grep $symbioteCloudName | awk '/\.\w*\t/ {print strtonum($1)}'`
+    # kill all proceses that has parent screen pid 
+    for i in `ps -xao pid,ppid,command | grep $SCREEN_PID | grep java | awk '{ print $1 }'`; do kill -9 $i; done
+    # kill screen
     screen -X -S $symbioteCloudName quit
 }
 
