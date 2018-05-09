@@ -9,7 +9,7 @@ authenticationAuthorizationManagerVersion=3.1.1
 registrationHandlerVersion=1.2.1
 resourceAccessProxyVersion=1.2.6
 
-symbIoTeSecurityVersion=25.5.0
+symbIoTeSecurityVersion=25.6.0
 
 # function for downloading on jar
 # arguments: componentName, version
@@ -36,6 +36,7 @@ jar_download() {
     mkdir AuthenticationAuthorizationManager
     download_jar "AuthenticationAuthorizationManager" $authenticationAuthorizationManagerVersion 
     wget https://jitpack.io/com/github/symbiote-h2020/SymbIoTeSecurity/$symbIoTeSecurityVersion/SymbIoTeSecurity-$symbIoTeSecurityVersion-helper.jar -O AuthenticationAuthorizationManager/SymbIoTeSecurity-$symbIoTeSecurityVersion-helper.jar
+    wget https://www.bouncycastle.org/download/bcprov-jdk15on-159.jar -O AuthenticationAuthorizationManager/bcprov-jdk15on-159.jar
 
     # RH
     mkdir RegistrationHandler
@@ -83,6 +84,7 @@ src_download() {
     copy_jar ResourceAccessProxy
     copy_jar ZipkinService
     wget https://jitpack.io/com/github/symbiote-h2020/SymbIoTeSecurity/$symbIoTeSecurityVersion/SymbIoTeSecurity-$symbIoTeSecurityVersion-helper.jar -O AuthenticationAuthorizationManager/SymbIoTeSecurity-$symbIoTeSecurityVersion-helper.jar
+    wget https://www.bouncycastle.org/download/bcprov-jdk15on-159.jar -O AuthenticationAuthorizationManager/bcprov-jdk15on-159.jar
 
     download_cloudConfig
 }
@@ -118,7 +120,7 @@ configure() {
 
     # AAM security - keystore generation
     cd AuthenticationAuthorizationManager
-    java -jar SymbIoTeSecurity-$symbIoTeSecurityVersion-helper.jar cert.properties
+    java -cp SymbIoTeSecurity-$symbIoTeSecurityVersion-helper.jar:bcprov-jdk15on-159.jar eu.h2020.symbiote.security.helpers.ServiceAAMCertificateKeyStoreFactory cert.properties
     cd ..
 }
 
