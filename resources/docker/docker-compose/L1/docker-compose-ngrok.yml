@@ -1,0 +1,15 @@
+version: "3.5"
+services:
+  symbiote-nginx:
+    container_name: symbiote-nginx
+    image: symbioteh2020/symbiote-nginx
+    ports:
+      - 127.0.0.1:8102:8102
+    networks:
+      - symbiote
+    volumes:
+      - type: bind
+        source: ./configuration.zip
+        target: /home/configuration.zip
+    environment:
+      - SYMBIOTE_ENV=ngrok

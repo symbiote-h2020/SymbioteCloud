@@ -1,0 +1,42 @@
+version: "3.5"
+services:
+  symbiote-rabbitmq:
+    container_name: symbiote-rabbitmq
+    image: rabbitmq:3-alpine
+    hostname: symbiote-rabbitmq
+    networks:
+      - symbiote
+    ports:
+      - 127.0.0.1:5671:5671
+      - 127.0.0.1:5672:5672
+  symbiote-mongo:
+    container_name: symbiote-mongo
+    image: mongo:3.6
+    networks:
+      - symbiote
+    volumes:
+      - symbiote-vol:/data/db
+  symbiote-cloud:
+    container_name: symbiote-cloud
+    image: symbioteh2020/symbiote-cloud
+    networks:
+      - symbiote
+    ports:
+      - 127.0.0.1:8001:8001
+      - 127:0.0.1:8080:8080
+    volumes:
+      - type: bind
+        source: ./configuration.zip
+        target: /home/configuration.zip
+#    If you are behind a proxy populate the following environmental variables
+#    environment:
+#      - JAVA_HTTP_PROXY=-Dhttp.proxyHost={proxy_ip} -Dhttp.proxyPort={proxy_port}
+#      - JAVA_HTTPS_PROXY=-Dhttps.proxyHost={proxy_ip} -Dhttps.proxyPort={proxy_port}
+#      - JAVA_SOCKS_PROXY=-DsocksProxyHost={proxy_ip} -DsocksProxyPort={proxy_port}
+#      - JAVA_NON_PROXY_HOSTS=-Dhttp.nonProxyHosts=*symbiote-h2020.eu|{your_platform_domain}
+networks:
+  symbiote:
+    name: symbiote
+    driver: bridge
+volumes:
+  symbiote-vol:

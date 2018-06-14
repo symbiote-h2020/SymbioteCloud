@@ -1,0 +1,18 @@
+version: "3.5"
+services:
+  symbiote-nginx:
+    container_name: symbiote-nginx
+    image: symbioteh2020/symbiote-nginx
+    ports:
+      - 443:443
+    networks:
+      - symbiote
+    volumes:
+      - type: bind
+        source: ./configuration.zip
+        target: /home/configuration.zip
+      - type: bind
+        source: ./nginx-certificates
+        target: /certificates
+    environment:
+      - SYMBIOTE_ENV=prod
