@@ -28,3 +28,6 @@
 [submodule "SubscriptionManager"]
 	path = SubscriptionManager
 	url = https://github.com/symbiote-h2020/SubscriptionManager.git
+[submodule "BarteringAndTrading"]
+	path = BarteringAndTrading
+	url = https://github.com/symbiote-h2020/BarteringAndTrading
