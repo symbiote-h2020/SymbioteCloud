@@ -2,10 +2,11 @@ version: "3.5"
 
 x-environment:
   &default-environment
-  - JAVA_HTTP_PROXY=-Dhttp.proxyHost=146.124.225.18 -Dhttp.proxyPort=3128
-  - JAVA_HTTPS_PROXY=-Dhttps.proxyHost=146.124.225.18 -Dhttps.proxyPort=3128
-  - JAVA_SOCKS_PROXY=-DsocksProxyHost=146.124.225.18 -DsocksProxyPort=3128
-  - JAVA_NON_PROXY_HOSTS=-Dhttp.nonProxyHosts=*symbiote-h2020.eu|symbiote-cloudconfig|symbiote-aam
+#### Uncomment and configure the following if you are behind a proxy
+#  - JAVA_HTTP_PROXY=-Dhttp.proxyHost=TODO -Dhttp.proxyPort=TODO
+#  - JAVA_HTTPS_PROXY=-Dhttps.proxyHost=TODO -Dhttps.proxyPort=TODO
+#  - JAVA_SOCKS_PROXY=-DsocksProxyHost=TODO -DsocksProxyPort=TODO
+#  - JAVA_NON_PROXY_HOSTS=-Dhttp.nonProxyHosts=symbiote-cloudconfig|symbiote-aam
   - JVM_OPTS=-XX:+UnlockExperimentalVMOptions -XX:+UseCGroupMemoryLimitForHeap -XX:MaxRAMFraction=1
 services:
   symbiote-rabbitmq:
