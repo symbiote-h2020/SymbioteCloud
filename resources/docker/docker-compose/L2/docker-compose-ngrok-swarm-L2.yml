@@ -11,10 +11,6 @@ services:
       target: /home/nginx-ngrok.conf
     - source: nginxprod
       target: /home/nginx-prod.conf
-    - source: nginxfullchaincert
-      target: /certificates/fullchain.pem
-    - source: nginxprivkeycert
-      target: /certificates/privkey.pem
     environment:
     - SYMBIOTE_ENV=ngrok
     depends_on:
@@ -32,8 +28,5 @@ secrets:
     file: ./nginx-ngrok.conf
   nginxprod:
     file: ./nginx-prod.conf
-  nginxfullchaincert:
-    file: ./nginx-certificates/fullchain.pem
-  nginxprivkeycert:
-    file: ./nginx-certificates/privkey.pem
+
 
