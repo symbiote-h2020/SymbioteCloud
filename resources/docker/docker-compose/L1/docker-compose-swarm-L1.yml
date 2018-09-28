@@ -7,99 +7,95 @@ x-environment:
 #  - JAVA_HTTPS_PROXY=-Dhttps.proxyHost=TODO -Dhttps.proxyPort=TODO
 #  - JAVA_SOCKS_PROXY=-DsocksProxyHost=TODO -DsocksProxyPort=TODO
 #  - JAVA_NON_PROXY_HOSTS=-Dhttp.nonProxyHosts=symbiote-cloudconfig|symbiote-aam
-  - JVM_OPTS=-XX:+UnlockExperimentalVMOptions -XX:+UseCGroupMemoryLimitForHeap -XX:MaxRAMFraction=1
+  - _JAVA_OPTIONS=-XX:+UnlockExperimentalVMOptions -XX:+UseCGroupMemoryLimitForHeap -XX:MaxRAMFraction=1
 services:
   symbiote-rabbitmq:
     image: rabbitmq:3-alpine
-    networks: 
-      - symbiote
+    networks:
+    - symbiote
     ports:
-      - 5671:5671
-      - 5672:5672
+    - 5671:5671
+    - 5672:5672
   symbiote-mongo:
     image: mongo:3.6
-    networks: 
-      - symbiote
+    networks:
+    - symbiote
     volumes:
-      - symbiote-vol:/data/db
+    - symbiote-vol:/data/db
   symbiote-cloudconfig:
     image: symbioteh2020/symbiote-cloudconfig
     deploy:
-     resources:
-       limits:
-         memory: 350M
-    networks: 
-      - symbiote
+      resources:
+        limits:
+          memory: 500M
+    networks:
+    - symbiote
     secrets:
-      - source: cloudconfigconfig 
-        target: /home/application-custom.properties
+    - source: cloudconfigconfig
+      target: /home/application-custom.properties
     environment: *default-environment
   symbiote-aam:
     image: symbioteh2020/symbiote-aam
     deploy:
-     resources:
-       limits:
-         memory: 350M
-    networks: 
-      - symbiote
+      resources:
+        limits:
+          memory: 500M
+    networks:
+    - symbiote
     secrets:
-      - source: aambootstrapconfig
-        target: /home/bootstrap.properties
-      - source: aamcertconfig
-        target: /home/cert.properties
+    - source: aambootstrapconfig
+      target: /home/bootstrap.properties
+    - source: aamcertconfig
+      target: /home/cert.properties
     environment: *default-environment
   symbiote-eureka:
     image: symbioteh2020/symbiote-eureka
-    deploy:
-     resources:
-       limits:
-         memory: 350M
-    networks: 
-      - symbiote
+    networks:
+    - symbiote
     secrets:
-      - source: eurekabootstrapconfig
-        target: /home/bootstrap.properties
+    - source: eurekabootstrapconfig
+      target: /home/bootstrap.properties
   symbiote-rap:
     image: symbioteh2020/symbiote-rap
     depends_on:
-      - symbiote-aam
+    - symbiote-aam
     deploy:
-     resources:
-       limits:
-         memory: 350M
-    networks: 
-      - symbiote
+      resources:
+        limits:
+          memory: 600M
+    networks:
+    - symbiote
     secrets:
-      - source: rapbootstrapconfig
-        target: /home/bootstrap.properties
+    - source: rapbootstrapconfig
+      target: /home/bootstrap.properties
     environment: *default-environment
   symbiote-rh:
     image: symbioteh2020/symbiote-rh
     depends_on:
-      - symbiote-aam
+    - symbiote-aam
     deploy:
-     resources:
-       limits:
-         memory: 350M
-    networks: 
-      - symbiote
+      resources:
+        limits:
+          memory: 500M
+    networks:
+    - symbiote
     secrets:
-      - source: rhbootstrapconfig
-        target: /home/bootstrap.properties
+    - source: rhbootstrapconfig
+      target: /home/bootstrap.properties
     environment: *default-environment
   symbiote-monitoring:
     image: symbioteh2020/symbiote-monitoring
     depends_on:
-      - symbiote-aam
+    - symbiote-aam
     deploy:
-     resources:
-       limits:
-         memory: 350M
-    networks: 
-      - symbiote
+      resources:
+        limits:
+          memory: 500M
+    networks:
+    - symbiote
     secrets:
-      - source: monitorbootstrapconfig
-        target: /home/bootstrap.properties
+    - source: monitorbootstrapconfig
+      target: /home/bootstrap.properties
     environment: *default-environment
 networks:
   symbiote:
@@ -121,6 +117,5 @@ secrets:
     file: ./RegistrationHandler/bootstrap.properties
   monitorbootstrapconfig:
     file: ./Monitoring/bootstrap.properties
-
 
 
