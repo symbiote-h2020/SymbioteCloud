@@ -3,7 +3,7 @@ services:
   symbiote-nginx:
     image: symbioteh2020/symbiote-nginx
     ports:
-    - 8102:8102
+    - 127.0.0.1:8102:8102
     networks:
     - symbiote
     secrets:
