@@ -12,16 +12,16 @@ services:
   symbiote-rabbitmq:
     image: rabbitmq:3-alpine
     networks:
-    - symbiote
+      - symbiote
     ports:
-    - 5671:5671
-    - 5672:5672
+      - 127.0.0.1:5671:5671
+      - 127.0.0.1:5672:5672
   symbiote-mongo:
     image: mongo:3.6
     networks:
-    - symbiote
+      - symbiote
     volumes:
-    - symbiote-vol:/data/db
+      - symbiote-vol:/data/db
   symbiote-cloudconfig:
     image: symbioteh2020/symbiote-cloudconfig
     deploy:
@@ -29,7 +29,9 @@ services:
         limits:
           memory: 500M
     networks:
-    - symbiote
+      - symbiote
+    ports:
+      - 127.0.0.1:8888:8888
     secrets:
     - source: cloudconfigconfig
       target: /home/application-custom.properties
@@ -41,61 +43,65 @@ services:
         limits:
           memory: 500M
     networks:
-    - symbiote
+      - symbiote
+    ports:
+      - 127.0.0.1:8080:8080
     secrets:
-    - source: aambootstrapconfig
-      target: /home/bootstrap.properties
-    - source: aamcertconfig
-      target: /home/cert.properties
+      - source: aambootstrapconfig
+        target: /home/bootstrap.properties
+      - source: aamcertconfig
+        target: /home/cert.properties
     environment: *default-environment
   symbiote-eureka:
     image: symbioteh2020/symbiote-eureka
     networks:
-    - symbiote
+      - symbiote
     secrets:
-    - source: eurekabootstrapconfig
-      target: /home/bootstrap.properties
+      - source: eurekabootstrapconfig
+        target: /home/bootstrap.properties
   symbiote-rap:
     image: symbioteh2020/symbiote-rap
     depends_on:
-    - symbiote-aam
+      - symbiote-aam
     deploy:
       resources:
         limits:
           memory: 600M
     networks:
-    - symbiote
+      - symbiote
     secrets:
-    - source: rapbootstrapconfig
-      target: /home/bootstrap.properties
+      - source: rapbootstrapconfig
+        target: /home/bootstrap.properties
     environment: *default-environment
   symbiote-rh:
     image: symbioteh2020/symbiote-rh
     depends_on:
-    - symbiote-aam
+      - symbiote-aam
     deploy:
       resources:
         limits:
           memory: 500M
     networks:
-    - symbiote
+      - symbiote
+    ports:
+      - 127.0.0.1:8001:8001
     secrets:
-    - source: rhbootstrapconfig
-      target: /home/bootstrap.properties
+      - source: rhbootstrapconfig
+        target: /home/bootstrap.properties
     environment: *default-environment
   symbiote-monitoring:
     image: symbioteh2020/symbiote-monitoring
     depends_on:
-    - symbiote-aam
+      - symbiote-aam
     deploy:
       resources:
         limits:
           memory: 500M
     networks:
-    - symbiote
+      - symbiote
     secrets:
-    - source: monitorbootstrapconfig
-      target: /home/bootstrap.properties
+      - source: monitorbootstrapconfig
+        target: /home/bootstrap.properties
     environment: *default-environment
 networks:
   symbiote:
