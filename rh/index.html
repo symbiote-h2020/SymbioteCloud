@@ -437,22 +437,22 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <ul class="sectlevel2">
 <li><a href="#_registration-handler-rest-service_resource">2.1. Registration-handler-rest-service</a>
 <ul class="sectlevel3">
-<li><a href="#_clearresourcesusingdelete">2.1.1. Delete all resources in the local database and the core. USE WITH CAUTION!!!</a></li>
-<li><a href="#_updatelocalresourcesusingpost">2.1.2. Update the metadata of resources in the local registry. This operation will register this metadata if it&#8217;s not already registered but it won&#8217;t change how it&#8217;s shared with different federations</a></li>
-<li><a href="#_updatelocalresourcesusingput">2.1.3. Update the metadata of resources in the local registry. This operation will register this metadata if it&#8217;s not already registered but it won&#8217;t change how it&#8217;s shared with different federations</a></li>
-<li><a href="#_removelocalresourcesusingdelete">2.1.4. Remove resource metadata from the local registry. If these resources were shared with some federations, they will be removed from those federations as well</a></li>
-<li><a href="#_shareresourcesusingput">2.1.5. Share resources with federations. The return value is a JSON object whose key is the federation Id and the value is a list of the resource&#8217;s metadata which have been shared to that federation</a></li>
-<li><a href="#_unshareresourcesusingdelete">2.1.6. Remove resources previously shared in a federation. The return value is a JSON object whose keys are federation Ids and each value is a lis of resource metadata from the resources that were removed from that federation</a></li>
-<li><a href="#_addrdfresourcesusingpost">2.1.7. Register RDF resources into the core</a></li>
-<li><a href="#_addresourceusingpost">2.1.8. Register a resource into the SymbIoTe Core. If the resource is already registered, its metadata will be updated with the input information.</a></li>
-<li><a href="#_getresourceusingget">2.1.9. Get a resource providing its internal ID</a></li>
-<li><a href="#_updateresourceusingput">2.1.10. Update the metadata of a previously registered resource in the core. If the resource is not registered, it will be done by this operation</a></li>
-<li><a href="#_deleteresourceusingdelete">2.1.11. Delete a single resource from the core providing its internal ID</a></li>
-<li><a href="#_addresourcesusingpost">2.1.12. Register several resources into the SymbIote Core. If the resources are already registered, their metadata will be updated with the input information.</a></li>
-<li><a href="#_getresourcesusingget">2.1.13. Gets the whole set of resources that have been registered</a></li>
-<li><a href="#_updateresourcesusingput">2.1.14. Update the metadata of previously registered resources in the core. If the resources are not registered, they will be registered by this operation</a></li>
-<li><a href="#_deleteresourcesusingdelete">2.1.15. Delete several resources from the core prividing their internal IDs</a></li>
-<li><a href="#_syncusingput">2.1.16. Execute a sync operation. This operation will delete all resources of this platform in the core and re-register the local ones in the database</a></li>
+<li><a href="#_clearresourcesusingdelete">2.1.1. Delete all L1 and L2 Resources</a></li>
+<li><a href="#_updatelocalresourcesusingpost">2.1.2. Update several L2 Resources</a></li>
+<li><a href="#_updatelocalresourcesusingput">2.1.3. Update several L2 Resources</a></li>
+<li><a href="#_removelocalresourcesusingdelete">2.1.4. Delete several L2 Resources</a></li>
+<li><a href="#_shareresourcesusingput">2.1.5. Share L2 Resources</a></li>
+<li><a href="#_unshareresourcesusingdelete">2.1.6. Unshare L2 Resources</a></li>
+<li><a href="#_addrdfresourcesusingpost">2.1.7. Add several L1 Resources using RDF</a></li>
+<li><a href="#_addresourceusingpost">2.1.8. Add a single L1 Resource</a></li>
+<li><a href="#_getresourceusingget">2.1.9. Get resource by id</a></li>
+<li><a href="#_updateresourceusingput">2.1.10. Update a single L1 Resource</a></li>
+<li><a href="#_deleteresourceusingdelete">2.1.11. Delete a single L1 Resource</a></li>
+<li><a href="#_addresourcesusingpost">2.1.12. Add several L1 Resources</a></li>
+<li><a href="#_getresourcesusingget">2.1.13. Get the registered resources</a></li>
+<li><a href="#_updateresourcesusingput">2.1.14. Update several L1 Resources</a></li>
+<li><a href="#_deleteresourcesusingdelete">2.1.15. Delete several L1 Resources</a></li>
+<li><a href="#_syncusingput">2.1.16. Sync local and Core databases</a></li>
 </ul>
 </li>
 </ul>
@@ -538,10 +538,16 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <p>Registration Handler Rest Service</p>
 </div>
 <div class="sect3">
-<h4 id="_clearresourcesusingdelete"><a class="anchor" href="#_clearresourcesusingdelete"></a>2.1.1. Delete all resources in the local database and the core. USE WITH CAUTION!!!</h4>
+<h4 id="_clearresourcesusingdelete"><a class="anchor" href="#_clearresourcesusingdelete"></a>2.1.1. Delete all L1 and L2 Resources</h4>
 <div class="literalblock">
 <div class="content">
 <pre>DELETE /rh/clear</pre>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_description"><a class="anchor" href="#_description"></a>Description</h5>
+<div class="paragraph">
+<p>Delete all resources in the local database and the core. USE WITH CAUTION!!!</p>
 </div>
 </div>
 <div class="sect4">
@@ -585,10 +591,16 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </div>
 </div>
 <div class="sect3">
-<h4 id="_updatelocalresourcesusingpost"><a class="anchor" href="#_updatelocalresourcesusingpost"></a>2.1.2. Update the metadata of resources in the local registry. This operation will register this metadata if it&#8217;s not already registered but it won&#8217;t change how it&#8217;s shared with different federations</h4>
+<h4 id="_updatelocalresourcesusingpost"><a class="anchor" href="#_updatelocalresourcesusingpost"></a>2.1.2. Update several L2 Resources</h4>
 <div class="literalblock">
 <div class="content">
 <pre>POST /rh/local/resources</pre>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_description_2"><a class="anchor" href="#_description_2"></a>Description</h5>
+<div class="paragraph">
+<p>Update the metadata of resources in the local registry. This operation will register this metadata if it&#8217;s not already registered but it won&#8217;t change how it&#8217;s shared with different federations</p>
 </div>
 </div>
 <div class="sect4">
@@ -675,10 +687,16 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </div>
 </div>
 <div class="sect3">
-<h4 id="_updatelocalresourcesusingput"><a class="anchor" href="#_updatelocalresourcesusingput"></a>2.1.3. Update the metadata of resources in the local registry. This operation will register this metadata if it&#8217;s not already registered but it won&#8217;t change how it&#8217;s shared with different federations</h4>
+<h4 id="_updatelocalresourcesusingput"><a class="anchor" href="#_updatelocalresourcesusingput"></a>2.1.3. Update several L2 Resources</h4>
 <div class="literalblock">
 <div class="content">
 <pre>PUT /rh/local/resources</pre>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_description_3"><a class="anchor" href="#_description_3"></a>Description</h5>
+<div class="paragraph">
+<p>Update the metadata of resources in the local registry. This operation will register this metadata if it&#8217;s not already registered but it won&#8217;t change how it&#8217;s shared with different federations</p>
 </div>
 </div>
 <div class="sect4">
@@ -765,10 +783,16 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </div>
 </div>
 <div class="sect3">
-<h4 id="_removelocalresourcesusingdelete"><a class="anchor" href="#_removelocalresourcesusingdelete"></a>2.1.4. Remove resource metadata from the local registry. If these resources were shared with some federations, they will be removed from those federations as well</h4>
+<h4 id="_removelocalresourcesusingdelete"><a class="anchor" href="#_removelocalresourcesusingdelete"></a>2.1.4. Delete several L2 Resources</h4>
 <div class="literalblock">
 <div class="content">
 <pre>DELETE /rh/local/resources</pre>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_description_4"><a class="anchor" href="#_description_4"></a>Description</h5>
+<div class="paragraph">
+<p>Remove resource metadata from the local registry. If these resources were shared with some federations, they will be removed from those federations as well</p>
 </div>
 </div>
 <div class="sect4">
@@ -840,10 +864,16 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </div>
 </div>
 <div class="sect3">
-<h4 id="_shareresourcesusingput"><a class="anchor" href="#_shareresourcesusingput"></a>2.1.5. Share resources with federations. The return value is a JSON object whose key is the federation Id and the value is a list of the resource&#8217;s metadata which have been shared to that federation</h4>
+<h4 id="_shareresourcesusingput"><a class="anchor" href="#_shareresourcesusingput"></a>2.1.5. Share L2 Resources</h4>
 <div class="literalblock">
 <div class="content">
 <pre>PUT /rh/local/resources/share</pre>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_description_5"><a class="anchor" href="#_description_5"></a>Description</h5>
+<div class="paragraph">
+<p>Share resources with federations. The return value is a JSON object whose key is the federation Id and the value is a list of the resource&#8217;s metadata which have been shared to that federation</p>
 </div>
 </div>
 <div class="sect4">
@@ -930,10 +960,16 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </div>
 </div>
 <div class="sect3">
-<h4 id="_unshareresourcesusingdelete"><a class="anchor" href="#_unshareresourcesusingdelete"></a>2.1.6. Remove resources previously shared in a federation. The return value is a JSON object whose keys are federation Ids and each value is a lis of resource metadata from the resources that were removed from that federation</h4>
+<h4 id="_unshareresourcesusingdelete"><a class="anchor" href="#_unshareresourcesusingdelete"></a>2.1.6. Unshare L2 Resources</h4>
 <div class="literalblock">
 <div class="content">
 <pre>DELETE /rh/local/resources/share</pre>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_description_6"><a class="anchor" href="#_description_6"></a>Description</h5>
+<div class="paragraph">
+<p>Remove resources previously shared in a federation. The return value is a JSON object whose keys are federation Ids and each value is a lis of resource metadata from the resources that were removed from that federation</p>
 </div>
 </div>
 <div class="sect4">
@@ -1005,10 +1041,16 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </div>
 </div>
 <div class="sect3">
-<h4 id="_addrdfresourcesusingpost"><a class="anchor" href="#_addrdfresourcesusingpost"></a>2.1.7. Register RDF resources into the core</h4>
+<h4 id="_addrdfresourcesusingpost"><a class="anchor" href="#_addrdfresourcesusingpost"></a>2.1.7. Add several L1 Resources using RDF</h4>
 <div class="literalblock">
 <div class="content">
 <pre>POST /rh/rdf-resources</pre>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_description_7"><a class="anchor" href="#_description_7"></a>Description</h5>
+<div class="paragraph">
+<p>Register RDF resources into the core</p>
 </div>
 </div>
 <div class="sect4">
@@ -1095,10 +1137,16 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </div>
 </div>
 <div class="sect3">
-<h4 id="_addresourceusingpost"><a class="anchor" href="#_addresourceusingpost"></a>2.1.8. Register a resource into the SymbIoTe Core. If the resource is already registered, its metadata will be updated with the input information.</h4>
+<h4 id="_addresourceusingpost"><a class="anchor" href="#_addresourceusingpost"></a>2.1.8. Add a single L1 Resource</h4>
 <div class="literalblock">
 <div class="content">
 <pre>POST /rh/resource</pre>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_description_8"><a class="anchor" href="#_description_8"></a>Description</h5>
+<div class="paragraph">
+<p>Register a resource into the SymbIoTe Core. If the resource is already registered, its metadata will be updated with the input information.</p>
 </div>
 </div>
 <div class="sect4">
@@ -1185,10 +1233,16 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </div>
 </div>
 <div class="sect3">
-<h4 id="_getresourceusingget"><a class="anchor" href="#_getresourceusingget"></a>2.1.9. Get a resource providing its internal ID</h4>
+<h4 id="_getresourceusingget"><a class="anchor" href="#_getresourceusingget"></a>2.1.9. Get resource by id</h4>
 <div class="literalblock">
 <div class="content">
 <pre>GET /rh/resource</pre>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_description_9"><a class="anchor" href="#_description_9"></a>Description</h5>
+<div class="paragraph">
+<p>Get a resource providing its internal ID</p>
 </div>
 </div>
 <div class="sect4">
@@ -1260,10 +1314,16 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </div>
 </div>
 <div class="sect3">
-<h4 id="_updateresourceusingput"><a class="anchor" href="#_updateresourceusingput"></a>2.1.10. Update the metadata of a previously registered resource in the core. If the resource is not registered, it will be done by this operation</h4>
+<h4 id="_updateresourceusingput"><a class="anchor" href="#_updateresourceusingput"></a>2.1.10. Update a single L1 Resource</h4>
 <div class="literalblock">
 <div class="content">
 <pre>PUT /rh/resource</pre>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_description_10"><a class="anchor" href="#_description_10"></a>Description</h5>
+<div class="paragraph">
+<p>Update the metadata of a previously registered resource in the core. If the resource is not registered, it will be done by this operation</p>
 </div>
 </div>
 <div class="sect4">
@@ -1350,10 +1410,16 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </div>
 </div>
 <div class="sect3">
-<h4 id="_deleteresourceusingdelete"><a class="anchor" href="#_deleteresourceusingdelete"></a>2.1.11. Delete a single resource from the core providing its internal ID</h4>
+<h4 id="_deleteresourceusingdelete"><a class="anchor" href="#_deleteresourceusingdelete"></a>2.1.11. Delete a single L1 Resource</h4>
 <div class="literalblock">
 <div class="content">
 <pre>DELETE /rh/resource</pre>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_description_11"><a class="anchor" href="#_description_11"></a>Description</h5>
+<div class="paragraph">
+<p>Delete a single resource from the core providing its internal ID</p>
 </div>
 </div>
 <div class="sect4">
@@ -1425,10 +1491,16 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </div>
 </div>
 <div class="sect3">
-<h4 id="_addresourcesusingpost"><a class="anchor" href="#_addresourcesusingpost"></a>2.1.12. Register several resources into the SymbIote Core. If the resources are already registered, their metadata will be updated with the input information.</h4>
+<h4 id="_addresourcesusingpost"><a class="anchor" href="#_addresourcesusingpost"></a>2.1.12. Add several L1 Resources</h4>
 <div class="literalblock">
 <div class="content">
 <pre>POST /rh/resources</pre>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_description_12"><a class="anchor" href="#_description_12"></a>Description</h5>
+<div class="paragraph">
+<p>Register several resources into the SymbIote Core. If the resources are already registered, their metadata will be updated with the input information.</p>
 </div>
 </div>
 <div class="sect4">
@@ -1515,10 +1587,16 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </div>
 </div>
 <div class="sect3">
-<h4 id="_getresourcesusingget"><a class="anchor" href="#_getresourcesusingget"></a>2.1.13. Gets the whole set of resources that have been registered</h4>
+<h4 id="_getresourcesusingget"><a class="anchor" href="#_getresourcesusingget"></a>2.1.13. Get the registered resources</h4>
 <div class="literalblock">
 <div class="content">
 <pre>GET /rh/resources</pre>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_description_13"><a class="anchor" href="#_description_13"></a>Description</h5>
+<div class="paragraph">
+<p>Gets the whole set of resources that have been registered</p>
 </div>
 </div>
 <div class="sect4">
@@ -1562,10 +1640,16 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </div>
 </div>
 <div class="sect3">
-<h4 id="_updateresourcesusingput"><a class="anchor" href="#_updateresourcesusingput"></a>2.1.14. Update the metadata of previously registered resources in the core. If the resources are not registered, they will be registered by this operation</h4>
+<h4 id="_updateresourcesusingput"><a class="anchor" href="#_updateresourcesusingput"></a>2.1.14. Update several L1 Resources</h4>
 <div class="literalblock">
 <div class="content">
 <pre>PUT /rh/resources</pre>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_description_14"><a class="anchor" href="#_description_14"></a>Description</h5>
+<div class="paragraph">
+<p>Update the metadata of previously registered resources in the core. If the resources are not registered, they will be registered by this operation</p>
 </div>
 </div>
 <div class="sect4">
@@ -1652,10 +1736,16 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </div>
 </div>
 <div class="sect3">
-<h4 id="_deleteresourcesusingdelete"><a class="anchor" href="#_deleteresourcesusingdelete"></a>2.1.15. Delete several resources from the core prividing their internal IDs</h4>
+<h4 id="_deleteresourcesusingdelete"><a class="anchor" href="#_deleteresourcesusingdelete"></a>2.1.15. Delete several L1 Resources</h4>
 <div class="literalblock">
 <div class="content">
 <pre>DELETE /rh/resources</pre>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_description_15"><a class="anchor" href="#_description_15"></a>Description</h5>
+<div class="paragraph">
+<p>Delete several resources from the core prividing their internal IDs</p>
 </div>
 </div>
 <div class="sect4">
@@ -1727,10 +1817,16 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </div>
 </div>
 <div class="sect3">
-<h4 id="_syncusingput"><a class="anchor" href="#_syncusingput"></a>2.1.16. Execute a sync operation. This operation will delete all resources of this platform in the core and re-register the local ones in the database</h4>
+<h4 id="_syncusingput"><a class="anchor" href="#_syncusingput"></a>2.1.16. Sync local and Core databases</h4>
 <div class="literalblock">
 <div class="content">
 <pre>PUT /rh/sync</pre>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_description_16"><a class="anchor" href="#_description_16"></a>Description</h5>
+<div class="paragraph">
+<p>Execute a sync operation. This operation will delete all resources of this platform in the core and re-register the local ones in the database</p>
 </div>
 </div>
 <div class="sect4">
