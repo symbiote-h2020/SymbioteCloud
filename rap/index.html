@@ -5,7 +5,7 @@
 <!--[if IE]><meta http-equiv="X-UA-Compatible" content="IE=edge"><![endif]-->
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="generator" content="Asciidoctor 1.5.3">
-<title>Core Interface</title>
+<title>Resource Access Proxy</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic%7CNoto+Serif:400,400italic,700,700italic%7CDroid+Sans+Mono:400,700">
 <style>
 /* Asciidoctor default stylesheet | MIT License | http://asciidoctor.org */
@@ -419,18 +419,17 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </head>
 <body class="book toc2 toc-left">
 <div id="header">
-<h1>Core Interface</h1>
+<h1>Resource Access Proxy</h1>
 <div id="toc" class="toc2">
 <div id="toctitle">Table of Contents</div>
 <ul class="sectlevel1">
 <li><a href="#_overview">1. Overview</a>
 <ul class="sectlevel2">
 <li><a href="#_version_information">1.1. Version information</a></li>
-<li><a href="#_contact_information">1.2. Contact information</a></li>
-<li><a href="#_license_information">1.3. License information</a></li>
-<li><a href="#_uri_scheme">1.4. URI scheme</a></li>
-<li><a href="#_tags">1.5. Tags</a></li>
-<li><a href="#_produces">1.6. Produces</a></li>
+<li><a href="#_license_information">1.2. License information</a></li>
+<li><a href="#_uri_scheme">1.3. URI scheme</a></li>
+<li><a href="#_tags">1.4. Tags</a></li>
+<li><a href="#_produces">1.5. Produces</a></li>
 </ul>
 </li>
 <li><a href="#_paths">2. Resources</a>
@@ -461,7 +460,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <h2 id="_overview"><a class="anchor" href="#_overview"></a>1. Overview</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>Interface allowing north-bound, REST access to symbIoTe core services</p>
+<p>Resource Access Proxy API Description</p>
 </div>
 <div class="sect2">
 <h3 id="_version_information"><a class="anchor" href="#_version_information"></a>1.1. Version information</h3>
@@ -470,29 +469,22 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </div>
 </div>
 <div class="sect2">
-<h3 id="_contact_information"><a class="anchor" href="#_contact_information"></a>1.2. Contact information</h3>
-<div class="paragraph">
-<p><em>Contact</em> : Artur Jaworski<br>
-<em>Contact Email</em> : <a href="mailto:artur.jaworski@man.poznan.pl">artur.jaworski@man.poznan.pl</a></p>
-</div>
-</div>
-<div class="sect2">
-<h3 id="_license_information"><a class="anchor" href="#_license_information"></a>1.3. License information</h3>
+<h3 id="_license_information"><a class="anchor" href="#_license_information"></a>1.2. License information</h3>
 <div class="paragraph">
 <p><em>License</em> : GNU Lesser General Public License v3.0<br>
-<em>License URL</em> : <a href="https://github.com/symbiote-h2020/CoreInterface/blob/master/LICENSE.txt" class="bare">https://github.com/symbiote-h2020/CoreInterface/blob/master/LICENSE.txt</a><br>
+<em>License URL</em> : <a href="https://github.com/symbiote-h2020/ResourceAccessProxy/blob/master/LICENSE.txt" class="bare">https://github.com/symbiote-h2020/ResourceAccessProxy/blob/master/LICENSE.txt</a><br>
 <em>Terms of service</em> : null</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_uri_scheme"><a class="anchor" href="#_uri_scheme"></a>1.4. URI scheme</h3>
+<h3 id="_uri_scheme"><a class="anchor" href="#_uri_scheme"></a>1.3. URI scheme</h3>
 <div class="paragraph">
-<p><em>Host</em> : <a href="https://symbiote-open.man.poznan.pl" class="bare">https://symbiote-open.man.poznan.pl</a><br>
+<p><em>Host</em> : <a href="https://{interworking-interface-url-of-platform}" class="bare">https://{interworking-interface-url-of-platform}</a><br>
 <em>BasePath</em> : /</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_tags"><a class="anchor" href="#_tags"></a>1.5. Tags</h3>
+<h3 id="_tags"><a class="anchor" href="#_tags"></a>1.4. Tags</h3>
 <div class="ulist">
 <ul>
 <li>
@@ -502,7 +494,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </div>
 </div>
 <div class="sect2">
-<h3 id="_produces"><a class="anchor" href="#_produces"></a>1.6. Produces</h3>
+<h3 id="_produces"><a class="anchor" href="#_produces"></a>1.5. Produces</h3>
 <div class="ulist">
 <ul>
 <li>
