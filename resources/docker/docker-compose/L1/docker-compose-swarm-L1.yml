@@ -23,7 +23,7 @@ services:
     volumes:
       - symbiote-vol:/data/db
   symbiote-cloudconfig:
-    image: symbioteh2020/symbiote-cloudconfig
+    image: symbioteh2020/symbiote-cloudconfig:3.0.1
     deploy:
       resources:
         limits:
@@ -37,7 +37,7 @@ services:
       target: /home/application-custom.properties
     environment: *default-environment
   symbiote-aam:
-    image: symbioteh2020/symbiote-aam
+    image: symbioteh2020/symbiote-aam:5.0.9
     deploy:
       resources:
         limits:
@@ -53,14 +53,14 @@ services:
         target: /home/cert.properties
     environment: *default-environment
   symbiote-eureka:
-    image: symbioteh2020/symbiote-eureka
+    image: symbioteh2020/symbiote-eureka:3.0.1
     networks:
       - symbiote
     secrets:
       - source: eurekabootstrapconfig
         target: /home/bootstrap.properties
   symbiote-rap:
-    image: symbioteh2020/symbiote-rap
+    image: symbioteh2020/symbiote-rap:3.0.4
     depends_on:
       - symbiote-aam
     deploy:
@@ -74,7 +74,7 @@ services:
         target: /home/bootstrap.properties
     environment: *default-environment
   symbiote-rh:
-    image: symbioteh2020/symbiote-rh
+    image: symbioteh2020/symbiote-rh:3.0.6
     depends_on:
       - symbiote-aam
     deploy:
@@ -90,7 +90,7 @@ services:
         target: /home/bootstrap.properties
     environment: *default-environment
   symbiote-monitoring:
-    image: symbioteh2020/symbiote-monitoring
+    image: symbioteh2020/symbiote-monitoring:3.0.2
     depends_on:
       - symbiote-aam
     deploy:
